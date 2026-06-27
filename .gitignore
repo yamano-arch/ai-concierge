@@ -1,0 +1,25 @@
+# 環境変数（APIキーを含むため絶対にコミットしない）
+.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+env/
+
+# macOS
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+
+# ログ
+*.log

@@ -1,0 +1,1795 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>こどもコンシェルジュ — AI体験提案サービス</title>
+<style>
+  :root {
+    --primary: #4F7FFF;
+    --primary-light: #EEF2FF;
+    --accent: #FF6B6B;
+    --green: #34C780;
+    --text: #1A1A2E;
+    --sub: #6B7280;
+    --border: #E5E7EB;
+    --bg: #F8F9FF;
+    --card: #FFFFFF;
+    --shadow: 0 4px 24px rgba(79,127,255,0.10);
+    --radius: 16px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', 'Yu Gothic', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ── LAYOUT ── */
+  .app {
+    max-width: 420px;
+    margin: 0 auto;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .screen {
+    display: none;
+    flex-direction: column;
+    flex: 1;
+    animation: fadeSlideIn 0.35s ease;
+  }
+  .screen.active { display: flex; }
+
+  @keyframes fadeSlideIn {
+    from { opacity: 0; transform: translateX(30px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+
+  /* ── HEADER ── */
+  .header {
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .header .logo {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--primary);
+    letter-spacing: -0.5px;
+  }
+  .header .logo span { color: var(--accent); }
+  .header .step-badge {
+    margin-left: auto;
+    background: var(--primary-light);
+    color: var(--primary);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 20px;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    background: linear-gradient(135deg, #4F7FFF 0%, #7B5EA7 100%);
+    padding: 40px 24px 48px;
+    color: white;
+    text-align: center;
+  }
+  .hero .emoji { font-size: 56px; margin-bottom: 12px; display: block; }
+  .hero h1 { font-size: 22px; font-weight: 800; line-height: 1.4; margin-bottom: 10px; }
+  .hero p { font-size: 14px; opacity: 0.88; line-height: 1.7; }
+
+  /* ── CONTENT AREA ── */
+  .content { padding: 24px 20px; flex: 1; }
+
+  /* ── FORM ── */
+  .form-section { margin-bottom: 28px; }
+  .form-section h3 {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--sub);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .field { margin-bottom: 16px; }
+  .field label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: var(--text);
+  }
+  .field input, .field select, .field textarea {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    font-size: 15px;
+    font-family: inherit;
+    color: var(--text);
+    background: white;
+    transition: border-color 0.2s;
+    -webkit-appearance: none;
+  }
+  .field input:focus, .field select:focus, .field textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(79,127,255,0.12);
+  }
+  .field textarea { resize: none; height: 88px; }
+
+  /* ── CHIP SELECTOR ── */
+  .chip-group { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip {
+    padding: 8px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    background: white;
+    color: var(--sub);
+    transition: all 0.15s;
+    user-select: none;
+  }
+  .chip.selected {
+    border-color: var(--primary);
+    background: var(--primary-light);
+    color: var(--primary);
+  }
+
+  /* ── BUTTON ── */
+  .btn {
+    display: block;
+    width: 100%;
+    padding: 16px;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: center;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, #4F7FFF, #7B5EA7);
+    color: white;
+    box-shadow: 0 4px 16px rgba(79,127,255,0.35);
+  }
+  .btn-primary:hover { opacity: 0.92; transform: translateY(-1px); }
+  .btn-primary:active { transform: translateY(0); }
+  .btn-ghost {
+    background: white;
+    color: var(--sub);
+    border: 1.5px solid var(--border);
+    margin-top: 10px;
+  }
+  .btn-green {
+    background: linear-gradient(135deg, #34C780, #0EA85A);
+    color: white;
+    box-shadow: 0 4px 16px rgba(52,199,128,0.30);
+  }
+
+  .sticky-footer {
+    position: sticky;
+    bottom: 0;
+    background: white;
+    padding: 16px 20px 24px;
+    border-top: 1px solid var(--border);
+  }
+
+  /* ── PROPOSAL CARDS ── */
+  .proposal-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    border: 1.5px solid var(--border);
+    margin-bottom: 20px;
+    overflow: hidden;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .proposal-card.picked {
+    border-color: var(--green);
+    box-shadow: 0 0 0 3px rgba(52,199,128,0.18);
+  }
+
+  /* 写真カルーセル */
+  .card-carousel {
+    position: relative;
+    height: 180px;
+    overflow: hidden;
+    background: #E5E7EB;
+  }
+  .carousel-imgs { width: 100%; height: 100%; }
+  .cimg {
+    position: absolute; inset: 0;
+    background-size: cover; background-position: center;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 56px;
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .cimg.active { opacity: 1; }
+  .card-img-1 { background-color: #f5576c; }
+  .card-img-2 { background-color: #4facfe; }
+  .card-img-3 { background-color: #43e97b; }
+  .card-img-4 { background-color: #f093fb; }
+  .card-img-5 { background-color: #667eea; }
+  .carousel-btn {
+    position: absolute; top: 50%; transform: translateY(-50%);
+    background: rgba(0,0,0,0.45); color: white;
+    border: none; width: 32px; height: 32px; border-radius: 50%;
+    font-size: 18px; cursor: pointer; z-index: 2;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .carousel-btn.left { left: 8px; }
+  .carousel-btn.right { right: 8px; }
+  .carousel-dots {
+    position: absolute; bottom: 8px; left: 0; right: 0;
+    display: flex; justify-content: center; gap: 5px; z-index: 2;
+  }
+  .cdot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: rgba(255,255,255,0.5); transition: background 0.2s;
+  }
+  .cdot.active { background: white; }
+  .match-badge {
+    position: absolute; top: 10px; right: 10px; z-index: 2;
+    background: rgba(0,0,0,0.6); color: white;
+    font-size: 11px; font-weight: 700;
+    padding: 4px 9px; border-radius: 20px;
+    backdrop-filter: blur(4px);
+  }
+
+  /* カード本体 */
+  .card-body { padding: 14px 16px; }
+  .card-tag {
+    display: inline-block; font-size: 11px; font-weight: 700;
+    padding: 3px 8px; border-radius: 6px; margin-bottom: 8px;
+  }
+  .tag-art     { background: #FFF0F6; color: #C2185B; }
+  .tag-science { background: #E8F4FD; color: #1565C0; }
+  .tag-nature  { background: #F1F8E9; color: #2E7D32; }
+  .tag-food    { background: #FFF8E1; color: #E65100; }
+  .tag-music   { background: #F3E5F5; color: #6A1B9A; }
+  .card-body h3 { font-size: 16px; font-weight: 800; margin-bottom: 4px; }
+  .location { font-size: 12px; color: var(--sub); margin-bottom: 8px; }
+  .card-meta {
+    display: flex; gap: 12px; font-size: 12px;
+    color: var(--sub); margin-bottom: 10px;
+  }
+  .card-meta span { display: flex; align-items: center; gap: 3px; }
+
+  /* AI推薦理由 */
+  .ai-reason-box {
+    background: var(--primary-light); border-radius: 10px;
+    padding: 10px 12px; margin-bottom: 10px;
+  }
+  .ai-reason-label {
+    font-size: 10px; font-weight: 700; color: var(--primary);
+    letter-spacing: 0.05em; margin-bottom: 4px;
+  }
+  .ai-reason-text { font-size: 13px; font-weight: 600; color: var(--text); line-height: 1.5; }
+
+  /* 子どものメリット */
+  .benefits-box {
+    background: #F0FDF4; border-radius: 10px;
+    padding: 10px 12px; margin-bottom: 10px;
+  }
+  .benefits-label {
+    font-size: 10px; font-weight: 700; color: #166534;
+    letter-spacing: 0.05em; margin-bottom: 6px;
+  }
+  .benefit-item { font-size: 13px; color: #166534; margin-bottom: 3px; }
+
+  .pick-indicator {
+    display: none; align-items: center; justify-content: center;
+    gap: 6px; margin-top: 8px; padding: 8px;
+    background: var(--green); color: white;
+    border-radius: 8px; font-size: 13px; font-weight: 700;
+  }
+  .proposal-card.picked .pick-indicator { display: flex; }
+
+  /* アクションボタン行 */
+  .card-actions {
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    border-top: 1px solid var(--border);
+  }
+  .card-actions button {
+    border: none; background: white; padding: 12px 4px;
+    font-size: 13px; font-weight: 700; cursor: pointer;
+    font-family: inherit; transition: background 0.15s;
+  }
+  .card-actions button:not(:last-child) { border-right: 1px solid var(--border); }
+  .btn-nope   { color: #EF4444; }
+  .btn-nope:hover   { background: #FEF2F2; }
+  .btn-detail { color: var(--sub); }
+  .btn-detail:hover { background: #F9FAFB; }
+  .btn-like   { color: var(--green); }
+  .btn-like:hover   { background: #F0FDF4; }
+
+  /* 次バッチボタン */
+  .next-batch-wrap {
+    text-align: center; padding: 8px 0 20px;
+  }
+  .btn-next-batch {
+    display: inline-block; padding: 12px 28px;
+    border: 1.5px solid var(--primary); border-radius: 24px;
+    background: white; color: var(--primary);
+    font-size: 14px; font-weight: 700; cursor: pointer;
+    font-family: inherit; transition: all 0.15s;
+  }
+  .btn-next-batch:hover { background: var(--primary-light); }
+
+  /* ── DRAWER ── */
+  .drawer {
+    position: fixed; inset: 0; z-index: 100;
+    pointer-events: none; opacity: 0; transition: opacity 0.25s;
+  }
+  .drawer.open { pointer-events: all; opacity: 1; }
+  .drawer-overlay {
+    position: absolute; inset: 0; background: rgba(0,0,0,0.5);
+  }
+  .drawer-panel {
+    position: absolute; bottom: 0; left: 50%; transform: translateX(-50%) translateY(100%);
+    width: 100%; max-width: 420px;
+    background: white; border-radius: 20px 20px 0 0;
+    max-height: 90vh; overflow-y: auto;
+    transition: transform 0.3s ease;
+  }
+  .drawer.open .drawer-panel { transform: translateX(-50%) translateY(0); }
+  .drawer-handle {
+    width: 40px; height: 4px; background: var(--border);
+    border-radius: 2px; margin: 12px auto 4px;
+  }
+  .drawer-carousel {
+    width: 100%; height: 220px; position: relative; overflow: hidden;
+  }
+  .drawer-body { padding: 16px 20px; }
+  .reviews-title {
+    font-size: 13px; font-weight: 700; color: var(--sub);
+    margin-bottom: 10px; margin-top: 4px;
+  }
+  .review-item {
+    padding: 10px 0; border-bottom: 1px solid var(--border);
+  }
+  .review-item:last-child { border-bottom: none; }
+  .review-meta { font-size: 11px; color: var(--sub); margin-bottom: 4px; }
+  .review-text { font-size: 13px; line-height: 1.6; }
+  .drawer-footer {
+    position: sticky; bottom: 0; background: white;
+    padding: 12px 20px 24px; border-top: 1px solid var(--border);
+  }
+
+  /* ── BOOKING SCREEN ── */
+  .booking-summary {
+    background: var(--card);
+    border-radius: var(--radius);
+    border: 1.5px solid var(--border);
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+  .booking-summary .img-header {
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+  }
+  .booking-summary .summary-body { padding: 14px 16px; }
+  .booking-summary h3 { font-size: 17px; font-weight: 800; margin-bottom: 4px; }
+  .booking-summary .loc { font-size: 13px; color: var(--sub); margin-bottom: 12px; }
+
+  .ai-fill-section {
+    background: #F8F9FF;
+    border: 1.5px dashed var(--primary);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 20px;
+  }
+  .ai-fill-section h4 {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .fill-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #E5E7EB;
+    font-size: 13px;
+  }
+  .fill-row:last-child { border-bottom: none; }
+  .fill-row .label { color: var(--sub); }
+  .fill-row .value { font-weight: 600; color: var(--text); }
+  .fill-row .ai-badge {
+    font-size: 10px;
+    background: var(--primary-light);
+    color: var(--primary);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 700;
+  }
+
+  .payment-section {
+    background: #FFF8F0;
+    border: 1.5px solid #FFD580;
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 20px;
+  }
+  .payment-section h4 {
+    font-size: 13px;
+    font-weight: 700;
+    color: #B45309;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .payment-section p { font-size: 12px; color: #92400E; margin-bottom: 12px; }
+  .cvv-row { display: flex; gap: 10px; align-items: flex-end; }
+  .cvv-row .field { margin-bottom: 0; flex: 1; }
+  .cvv-row input {
+    font-size: 20px;
+    letter-spacing: 6px;
+    font-weight: 700;
+    text-align: center;
+  }
+  .price-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 12px;
+    border-top: 1px solid #FFD580;
+    margin-top: 12px;
+  }
+  .price-row .total-label { font-size: 14px; font-weight: 600; color: #B45309; }
+  .price-row .total { font-size: 22px; font-weight: 800; color: #B45309; }
+
+  /* ── SUCCESS SCREEN ── */
+  .success-block {
+    text-align: center;
+    padding: 40px 20px 20px;
+  }
+  .success-block .big-emoji { font-size: 72px; display: block; margin-bottom: 16px; animation: pop 0.5s ease; }
+  @keyframes pop {
+    0%   { transform: scale(0.5); opacity: 0; }
+    70%  { transform: scale(1.15); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  .success-block h2 { font-size: 22px; font-weight: 800; margin-bottom: 8px; }
+  .success-block p { font-size: 14px; color: var(--sub); line-height: 1.7; }
+
+  .booking-detail-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    border: 1.5px solid var(--border);
+    padding: 16px;
+    margin: 20px 0;
+  }
+  .detail-row {
+    display: flex;
+    gap: 10px;
+    font-size: 14px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .detail-row:last-child { border-bottom: none; }
+  .detail-row .dl { color: var(--sub); width: 80px; flex-shrink: 0; }
+  .detail-row .dd { font-weight: 600; }
+
+  /* ── FEEDBACK SCREEN ── */
+  .feedback-intro {
+    text-align: center;
+    padding: 28px 20px 0;
+  }
+  .feedback-intro .emoji { font-size: 48px; display: block; margin-bottom: 10px; }
+  .feedback-intro h2 { font-size: 19px; font-weight: 800; margin-bottom: 6px; }
+  .feedback-intro p { font-size: 13px; color: var(--sub); line-height: 1.6; }
+
+  .star-rating {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 20px 0 8px;
+  }
+  .star-rating span {
+    font-size: 36px;
+    cursor: pointer;
+    filter: grayscale(1);
+    transition: all 0.15s;
+  }
+  .star-rating span.lit { filter: grayscale(0); transform: scale(1.15); }
+
+  .tag-feedback { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 12px 0 20px; }
+  .tag-feedback .chip { font-size: 13px; }
+
+  /* ── PROGRESS BAR ── */
+  .progress-bar {
+    height: 4px;
+    background: var(--border);
+    position: relative;
+  }
+  .progress-bar .fill {
+    position: absolute;
+    height: 100%;
+    background: linear-gradient(90deg, #4F7FFF, #7B5EA7);
+    border-radius: 2px;
+    transition: width 0.4s ease;
+  }
+
+  /* ── NOTIFICATION BANNER ── */
+  .notif-banner {
+    background: white;
+    border-left: 4px solid var(--primary);
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow);
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  .notif-banner .icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
+  .notif-banner .ntxt { font-size: 13px; line-height: 1.5; }
+  .notif-banner .ntxt strong { display: block; font-size: 14px; margin-bottom: 2px; }
+
+  .section-title {
+    font-size: 18px;
+    font-weight: 800;
+    margin-bottom: 4px;
+  }
+  .section-sub {
+    font-size: 13px;
+    color: var(--sub);
+    margin-bottom: 20px;
+    line-height: 1.5;
+  }
+
+  /* divider */
+  .divider { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
+
+  /* ── ① 成長マップ ── */
+  .growth-hero {
+    background: linear-gradient(135deg, #4F7FFF 0%, #7B5EA7 100%);
+    padding: 28px 24px 36px;
+    color: white;
+    text-align: center;
+  }
+  .growth-hero .g-avatar { font-size: 52px; display: block; margin-bottom: 10px; }
+  .growth-hero h2 { font-size: 19px; font-weight: 800; margin-bottom: 6px; }
+  .growth-hero .level-pill {
+    display: inline-block; background: rgba(255,255,255,0.22);
+    padding: 5px 16px; border-radius: 20px; font-size: 13px; font-weight: 600;
+  }
+
+  .map-card {
+    background: white; border-radius: var(--radius);
+    border: 1.5px solid var(--border); padding: 16px; margin-bottom: 14px;
+  }
+  .map-card-title {
+    font-size: 12px; font-weight: 700; color: var(--sub);
+    letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 14px;
+    display: flex; align-items: center; gap: 6px;
+  }
+
+  /* カテゴリ進捗バー */
+  .cat-row { display: flex; align-items: center; gap: 8px; margin-bottom: 9px; }
+  .cat-row:last-child { margin-bottom: 0; }
+  .cat-label-wrap { width: 76px; flex-shrink: 0; display: flex; align-items: center; gap: 4px; }
+  .cat-emoji { font-size: 15px; }
+  .cat-name { font-size: 11px; font-weight: 600; color: var(--text); }
+  .cat-track { flex: 1; height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+  .cat-fill { height: 100%; border-radius: 4px; transition: width 0.7s ease; }
+  .cat-badge {
+    font-size: 10px; padding: 2px 6px; border-radius: 4px;
+    background: var(--primary-light); color: var(--primary); font-weight: 700; white-space: nowrap;
+  }
+  .cat-cnt { font-size: 12px; font-weight: 700; color: var(--sub); width: 24px; text-align: right; flex-shrink: 0; }
+
+  /* ② チャレンジ */
+  .challenge-card {
+    border-radius: 12px; padding: 13px; margin-bottom: 10px;
+  }
+  .challenge-card:last-child { margin-bottom: 0; }
+  .challenge-card.green { background: linear-gradient(135deg,#F0FDF4,#DCFCE7); border: 1.5px solid #86EFAC; }
+  .challenge-card.blue  { background: linear-gradient(135deg,#EFF6FF,#DBEAFE); border: 1.5px solid #93C5FD; }
+  .challenge-card h4 { font-size: 13px; font-weight: 700; margin-bottom: 3px; }
+  .challenge-card.green h4 { color: #166534; }
+  .challenge-card.blue  h4 { color: #1E3A8A; }
+  .challenge-card p { font-size: 12px; margin-bottom: 9px; }
+  .challenge-card.green p { color: #166534; }
+  .challenge-card.blue  p { color: #1E3A8A; }
+  .ch-track { height: 8px; background: rgba(255,255,255,0.7); border-radius: 4px; overflow: hidden; margin-bottom: 5px; }
+  .ch-fill { height: 100%; border-radius: 4px; transition: width 0.6s; }
+  .ch-label { font-size: 11px; font-weight: 700; text-align: right; }
+  .challenge-card.green .ch-fill  { background: #22C55E; }
+  .challenge-card.green .ch-label { color: #166534; }
+  .challenge-card.blue  .ch-fill  { background: #3B82F6; }
+  .challenge-card.blue  .ch-label { color: #1E3A8A; }
+
+  /* ③ バッジ */
+  .badge-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; }
+  .badge-cell { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .badge-icon {
+    width: 50px; height: 50px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; font-size: 22px;
+  }
+  .badge-icon.earned { background: linear-gradient(135deg,#FFD700,#FFA500); box-shadow: 0 2px 8px rgba(255,165,0,0.4); }
+  .badge-icon.locked { background: #F3F4F6; filter: grayscale(1); opacity: 0.45; }
+  .badge-lbl { font-size: 10px; font-weight: 600; text-align: center; line-height: 1.3; color: var(--text); }
+  .badge-lbl.locked { color: var(--sub); }
+
+  /* 体験ログ */
+  .log-item { display: flex; gap: 10px; align-items: flex-start; padding: 10px 0; border-bottom: 1px solid var(--border); }
+  .log-item:last-child { border-bottom: none; }
+  .log-icon-wrap { width: 38px; height: 38px; border-radius: 50%; background: var(--primary-light); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+  .log-body { flex: 1; }
+  .log-name { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+  .log-meta { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+  .log-date { font-size: 11px; color: var(--sub); }
+
+  /* ── アニメーション ── */
+  @keyframes lu-in {
+    0%  { opacity:0; transform:translate(-50%,-50%) scale(0.4); }
+    70% { transform:translate(-50%,-50%) scale(1.06); }
+    100%{ opacity:1; transform:translate(-50%,-50%) scale(1); }
+  }
+  @keyframes lu-out  { to { opacity:0; transform:translate(-50%,-50%) scale(1.15); } }
+  @keyframes lu-spin { from { transform:rotate(-25deg) scale(0.8); } to { transform:rotate(0deg) scale(1); } }
+  @keyframes fade-in { from { opacity:0; } to { opacity:1; } }
+  @keyframes fade-out{ to   { opacity:0; } }
+  @keyframes badge-pulse { 0%,100%{transform:scale(1);} 50%{transform:scale(1.14);} }
+  @keyframes xp-float {
+    0%  { opacity:1; transform:translateY(0) rotate(0deg) scale(1); }
+    100%{ opacity:0; transform:translateY(-110px) rotate(15deg) scale(0.8); }
+  }
+  @keyframes ach-badge-in {
+    0%  { transform:scale(0.3) rotate(-30deg); opacity:0; }
+    60% { transform:scale(1.2) rotate(5deg); opacity:1; }
+    100%{ transform:scale(1) rotate(0deg); }
+  }
+
+  /* レベルアップポップアップ */
+  .lu-backdrop {
+    position:fixed; inset:0; background:rgba(0,0,0,0.52); z-index:1000;
+    animation:fade-in 0.25s ease;
+  }
+  .lu-backdrop.out { animation:fade-out 0.35s ease forwards; }
+  .lu-popup {
+    position:fixed; top:50%; left:50%;
+    transform:translate(-50%,-50%);
+    background:linear-gradient(135deg,#4F7FFF,#7B5EA7);
+    color:white; padding:32px 40px; border-radius:24px;
+    text-align:center; z-index:1001;
+    box-shadow:0 10px 48px rgba(79,127,255,0.55);
+    min-width:220px;
+    animation:lu-in 0.38s ease;
+  }
+  .lu-popup.out { animation:lu-out 0.35s ease forwards; }
+  .lu-emoji { font-size:58px; display:block; margin-bottom:8px; animation:lu-spin 0.45s ease; }
+  .lu-cat   { font-size:13px; opacity:0.82; margin-bottom:3px; }
+  .lu-lbl   { font-size:21px; font-weight:800; margin-bottom:10px; }
+  .lu-stars { font-size:20px; letter-spacing:7px; }
+
+  /* スキル獲得オーバーレイ */
+  .ach-overlay {
+    position:fixed; inset:0; z-index:1002;
+    background:linear-gradient(135deg,#4F7FFF 0%,#7B5EA7 100%);
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center; overflow:hidden;
+    animation:fade-in 0.3s ease;
+  }
+  .ach-overlay.out { animation:fade-out 0.4s ease forwards; }
+  .ach-particles { position:absolute; inset:0; pointer-events:none; }
+  .ach-badge { font-size:80px; margin-bottom:16px; animation:ach-badge-in 0.5s ease, badge-pulse 0.8s ease 0.5s infinite; }
+  .ach-title { color:white; font-size:26px; font-weight:800; margin-bottom:8px; }
+  .ach-sub   { color:rgba(255,255,255,0.85); font-size:15px; }
+
+  /* ④ シェア */
+  .share-btn {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    width: 100%; padding: 14px;
+    border: 1.5px solid var(--primary); border-radius: 12px;
+    background: var(--primary-light); color: var(--primary);
+    font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit;
+    transition: all 0.15s;
+  }
+  .share-btn:hover { background: var(--primary); color: white; }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ════════════════════════════════
+       SCREEN 1: ONBOARDING / HERO
+  ════════════════════════════════ -->
+  <div id="screen-welcome" class="screen active">
+    <div class="hero">
+      <span class="emoji">🌟</span>
+      <h1>わが子だけの<br>週末体験を、AIが選ぶ</h1>
+      <p>調べる・予約するの手間はゼロ。<br>AIが子どもの個性に合った体験を自動提案。</p>
+    </div>
+    <div class="content">
+      <div class="notif-banner">
+        <span class="icon">✨</span>
+        <div class="ntxt">
+          <strong>初回は無料でお試し</strong>
+          プロファイル登録するだけで、今週末のおすすめ体験プランをAIがご提案します。
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:28px;">
+        <div style="display:flex;gap:12px;align-items:center;padding:14px;background:white;border-radius:12px;box-shadow:var(--shadow);">
+          <span style="font-size:28px;">🔍</span>
+          <div>
+            <div style="font-weight:700;font-size:14px;margin-bottom:2px;">AIが代わりに調べる</div>
+            <div style="font-size:12px;color:var(--sub);">数百件の体験施設から厳選して提案</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:center;padding:14px;background:white;border-radius:12px;box-shadow:var(--shadow);">
+          <span style="font-size:28px;">📝</span>
+          <div>
+            <div style="font-weight:700;font-size:14px;margin-bottom:2px;">予約フォームを自動入力</div>
+            <div style="font-size:12px;color:var(--sub);">お名前・連絡先などはAIが代行入力</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:center;padding:14px;background:white;border-radius:12px;box-shadow:var(--shadow);">
+          <span style="font-size:28px;">🔐</span>
+          <div>
+            <div style="font-weight:700;font-size:14px;margin-bottom:2px;">決済だけあなたが操作</div>
+            <div style="font-size:12px;color:var(--sub);">セキュリティコード入力のみ（約15秒）</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="sticky-footer">
+      <button class="btn btn-primary" onclick="goTo('screen-profile')">はじめる（無料）</button>
+      <button class="btn btn-ghost" onclick="showGrowthMap('screen-welcome')">🗺️ 成長マップを見る</button>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════
+       SCREEN 2: PROFILE INPUT
+  ════════════════════════════════ -->
+  <div id="screen-profile" class="screen">
+    <div class="header">
+      <div class="logo">こども<span>AI</span>コンシェルジュ</div>
+      <div class="step-badge">STEP 1/3</div>
+    </div>
+    <div class="progress-bar"><div class="fill" style="width:33%"></div></div>
+
+    <div class="content" style="overflow-y:auto;">
+      <div class="section-title">お子さまのプロフィール</div>
+      <div class="section-sub">入力内容をもとにAIがパーソナライズされた体験を提案します。</div>
+
+      <div class="form-section">
+        <h3>基本情報</h3>
+        <div class="field">
+          <label>お子さまのお名前（ニックネームOK）</label>
+          <input type="text" placeholder="例：たろう" id="child-name">
+        </div>
+        <div class="field">
+          <label>年齢</label>
+          <select id="child-age">
+            <option value="">選択してください</option>
+            <option>3歳</option><option>4歳</option><option>5歳</option>
+            <option>6歳（年長）</option><option>小1</option><option>小2</option>
+            <option>小3</option><option>小4</option><option>小5</option><option>小6</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3>性格・特徴</h3>
+        <div class="chip-group" id="personality-chips">
+          <span class="chip" onclick="toggleChip(this)">🎨 もの作りが好き</span>
+          <span class="chip" onclick="toggleChip(this)">🌿 外遊び・自然派</span>
+          <span class="chip" onclick="toggleChip(this)">📚 読書・勉強好き</span>
+          <span class="chip" onclick="toggleChip(this)">🎵 音楽・リズム感</span>
+          <span class="chip" onclick="toggleChip(this)">⚽ スポーツ好き</span>
+          <span class="chip" onclick="toggleChip(this)">🔬 理科・実験が好き</span>
+          <span class="chip" onclick="toggleChip(this)">🤝 人見知りしない</span>
+          <span class="chip" onclick="toggleChip(this)">🐱 動物が大好き</span>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3>体験させたいジャンル</h3>
+        <div class="chip-group" id="genre-chips">
+          <span class="chip" onclick="toggleChip(this)">🎭 アート・工作</span>
+          <span class="chip" onclick="toggleChip(this)">🌱 農業・自然体験</span>
+          <span class="chip" onclick="toggleChip(this)">🔭 科学・プログラミング</span>
+          <span class="chip" onclick="toggleChip(this)">🎪 音楽・演劇</span>
+          <span class="chip" onclick="toggleChip(this)">🏄 スポーツ体験</span>
+          <span class="chip" onclick="toggleChip(this)">🍳 料理・食育</span>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3>教育方針・大切にしていること</h3>
+        <div class="chip-group" id="policy-chips">
+          <span class="chip" onclick="toggleChip(this)">🧠 自分で考える力</span>
+          <span class="chip" onclick="toggleChip(this)">🤝 友達と協力する力</span>
+          <span class="chip" onclick="toggleChip(this)">🎯 やり抜く力・集中力</span>
+          <span class="chip" onclick="toggleChip(this)">🌍 多様な体験を積む</span>
+          <span class="chip" onclick="toggleChip(this)">🏆 チャレンジ精神</span>
+          <span class="chip" onclick="toggleChip(this)">💬 コミュニケーション力</span>
+          <span class="chip" onclick="toggleChip(this)">🎨 創造性・表現力</span>
+          <span class="chip" onclick="toggleChip(this)">📚 知的好奇心を育てる</span>
+          <span class="chip" onclick="toggleChip(this)">💪 体力・健康づくり</span>
+          <span class="chip" onclick="toggleChip(this)">🌱 自然・環境への関心</span>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3>活動エリア</h3>
+        <div class="field">
+          <select>
+            <option>東京都（23区内）</option>
+            <option>東京都（多摩地区）</option>
+            <option>神奈川県</option>
+            <option>埼玉県</option>
+            <option>千葉県</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="height: 80px;"></div>
+    </div>
+    <div class="sticky-footer">
+      <button class="btn btn-primary" onclick="goTo('screen-loading')">AIに提案してもらう →</button>
+      <button class="btn btn-ghost" onclick="goTo('screen-welcome')">← 戻る</button>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════
+       SCREEN 3: AI LOADING
+  ════════════════════════════════ -->
+  <div id="screen-loading" class="screen">
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;text-align:center;">
+      <div style="font-size:64px;margin-bottom:24px;" id="loading-emoji">🤖</div>
+      <h2 style="font-size:20px;font-weight:800;margin-bottom:10px;" id="loading-title">AIが体験を検索中...</h2>
+      <p style="font-size:14px;color:var(--sub);line-height:1.7;" id="loading-sub">お子さまの個性に合った<br>週末体験プランを厳選しています</p>
+
+      <div style="width:100%;max-width:280px;margin:32px auto 0;">
+        <div style="height:6px;background:var(--border);border-radius:3px;overflow:hidden;">
+          <div id="ai-progress-bar" style="height:100%;background:linear-gradient(90deg,#4F7FFF,#7B5EA7);width:0;border-radius:3px;transition:width 0.4s;"></div>
+        </div>
+        <div style="margin-top:16px;display:flex;flex-direction:column;gap:8px;" id="loading-steps">
+          <div class="loading-step" id="ls-1" style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--sub);opacity:0.4;">
+            <span>⏳</span> 施設データベースを検索中 (284件)
+          </div>
+          <div class="loading-step" id="ls-2" style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--sub);opacity:0.4;">
+            <span>⏳</span> プロファイルと照合中
+          </div>
+          <div class="loading-step" id="ls-3" style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--sub);opacity:0.4;">
+            <span>⏳</span> 空き状況を確認中
+          </div>
+          <div class="loading-step" id="ls-4" style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--sub);opacity:0.4;">
+            <span>⏳</span> 上位3件を厳選中
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════
+       SCREEN 4: AI PROPOSALS
+  ════════════════════════════════ -->
+  <div id="screen-proposals" class="screen">
+    <div class="header">
+      <div class="logo">こども<span>AI</span>コンシェルジュ</div>
+      <div class="step-badge">STEP 2/3</div>
+    </div>
+    <div class="progress-bar"><div class="fill" style="width:66%"></div></div>
+
+    <div class="content" style="overflow-y:auto;">
+      <div class="section-title">今週末のおすすめ体験</div>
+      <div class="section-sub" id="proposal-sub">AIがプロフィールをもとに厳選した3プランです。気に入ったものをタップしてください。</div>
+
+      <!-- 動的カード挿入エリア -->
+      <div id="proposal-container"></div>
+
+      <!-- 次バッチ -->
+      <div class="next-batch-wrap">
+        <button class="btn-next-batch" id="next-batch-btn" onclick="loadNextBatch()">
+          次の3件を見る →
+        </button>
+      </div>
+
+      <div style="height:80px;"></div>
+    </div>
+
+    <div class="sticky-footer">
+      <button class="btn btn-primary" id="confirm-btn" onclick="confirmPlan()" disabled style="opacity:0.45;">
+        このプランで予約へ進む →
+      </button>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════
+       SCREEN 5: BOOKING / PAYMENT
+  ════════════════════════════════ -->
+  <div id="screen-booking" class="screen">
+    <div class="header">
+      <div class="logo">こども<span>AI</span>コンシェルジュ</div>
+      <div class="step-badge">STEP 3/3</div>
+    </div>
+    <div class="progress-bar"><div class="fill" style="width:90%"></div></div>
+
+    <div class="content" style="overflow-y:auto;">
+      <div class="section-title">予約内容の確認</div>
+      <div class="section-sub">AIが基本情報を自動入力しました。セキュリティコードだけご入力ください。</div>
+
+      <div class="booking-summary">
+        <div class="img-header card-img-1" id="booking-img-header">🎨</div>
+        <div class="summary-body">
+          <h3 id="booking-name">施設名</h3>
+          <div class="loc" id="booking-address">📍 住所</div>
+          <div style="display:flex;gap:8px;">
+            <span style="font-size:12px;background:#F3F4F6;padding:4px 8px;border-radius:6px;">👨‍👩‍👦 親子2名</span>
+            <a id="booking-website-link" href="#" target="_blank" rel="noopener"
+               style="font-size:12px;background:#EEF2FF;color:#4F7FFF;padding:4px 8px;border-radius:6px;text-decoration:none;">
+              🔗 公式サイトで詳細確認
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="ai-fill-section">
+        <h4>🤖 AIが自動入力した情報</h4>
+        <div class="fill-row">
+          <span class="label">参加者氏名</span>
+          <span class="value">山田 花子 <span class="ai-badge">AI入力済</span></span>
+        </div>
+        <div class="fill-row">
+          <span class="label">連絡先</span>
+          <span class="value">090-XXXX-XXXX <span class="ai-badge">AI入力済</span></span>
+        </div>
+        <div class="fill-row">
+          <span class="label">メールアドレス</span>
+          <span class="value">h.yamada@... <span class="ai-badge">AI入力済</span></span>
+        </div>
+        <div class="fill-row">
+          <span class="label">参加人数</span>
+          <span class="value">大人1名 + 子ども1名 <span class="ai-badge">AI入力済</span></span>
+        </div>
+        <div class="fill-row">
+          <span class="label">アレルギー等</span>
+          <span class="value">なし <span class="ai-badge">AI入力済</span></span>
+        </div>
+      </div>
+
+      <div class="payment-section">
+        <h4>🔐 お支払い（あなたが操作する部分はここだけ）</h4>
+        <p>セキュリティのため、カード番号はAIが保持していません。セキュリティコードのみご入力ください。</p>
+        <div class="field">
+          <label>クレジットカード番号</label>
+          <input type="text" value="**** **** **** 4242" readonly style="color:#9CA3AF;background:#F9FAFB;">
+        </div>
+        <div class="cvv-row">
+          <div class="field">
+            <label>セキュリティコード（CVV）</label>
+            <input type="tel" maxlength="3" placeholder="●●●" id="cvv-input" oninput="checkCVV(this)">
+          </div>
+          <div style="margin-bottom:16px;font-size:22px;">🔒</div>
+        </div>
+        <div class="price-row">
+          <span class="total-label">合計金額</span>
+          <span class="total">¥7,000</span>
+        </div>
+      </div>
+
+      <div style="background:#F0FDF4;border:1.5px solid #86EFAC;border-radius:12px;padding:14px;margin-bottom:20px;font-size:13px;color:#166534;line-height:1.6;">
+        ✅ この施設は教育専門家によって安全性・教育的価値が確認済みです。
+      </div>
+
+      <div style="height:80px;"></div>
+    </div>
+
+    <div class="sticky-footer">
+      <button class="btn btn-green" id="pay-btn" onclick="onPaymentConfirmed()" disabled style="opacity:0.45;">
+        🔐 予約を確定する（¥7,000）
+      </button>
+      <button class="btn btn-ghost" onclick="goTo('screen-proposals')">← プラン選択に戻る</button>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════
+       SCREEN 6: SUCCESS
+  ════════════════════════════════ -->
+  <div id="screen-success" class="screen">
+    <div class="header">
+      <div class="logo">こども<span>AI</span>コンシェルジュ</div>
+    </div>
+
+    <div class="content" style="overflow-y:auto;">
+      <div class="success-block">
+        <span class="big-emoji">🎉</span>
+        <h2>予約が完了しました！</h2>
+        <p>確認メールをお送りしました。<br>当日は楽しんできてくださいね！</p>
+      </div>
+
+      <div class="booking-detail-card">
+        <div class="detail-row">
+          <span class="dl">施設名</span>
+          <span class="dd">ガラスアート体験工房</span>
+        </div>
+        <div class="detail-row">
+          <span class="dl">日時</span>
+          <span class="dd">6月28日（日）10:00〜12:00</span>
+        </div>
+        <div class="detail-row">
+          <span class="dl">場所</span>
+          <span class="dd">渋谷区神南1-XX-XX（地図を見る）</span>
+        </div>
+        <div class="detail-row">
+          <span class="dl">参加者</span>
+          <span class="dd">山田 花子、たろう</span>
+        </div>
+        <div class="detail-row">
+          <span class="dl">お支払い</span>
+          <span class="dd">¥7,000（クレジットカード）</span>
+        </div>
+        <div class="detail-row">
+          <span class="dl">予約番号</span>
+          <span class="dd" style="color:var(--primary);font-family:monospace;">AIC-2026-8847</span>
+        </div>
+      </div>
+
+      <div class="notif-banner" style="border-left-color:var(--green)">
+        <span class="icon">📅</span>
+        <div class="ntxt">
+          <strong>カレンダーに追加しました</strong>
+          「6月28日 ガラスアート体験」をカレンダーに登録しました。前日にリマインダーを送ります。
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <div style="text-align:center;margin-bottom:8px;">
+        <div style="font-size:15px;font-weight:700;margin-bottom:4px;">体験後にフィードバックを送ると…</div>
+        <div style="font-size:13px;color:var(--sub);">次回の提案がさらに精度アップします ✨</div>
+      </div>
+    </div>
+
+    <div class="sticky-footer">
+      <button class="btn btn-primary" onclick="goTo('screen-feedback')">体験後にフィードバックを送る</button>
+      <button class="btn btn-ghost" onclick="showGrowthMap('screen-success')">🗺️ 成長マップに記録されました →</button>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════
+       SCREEN 7: FEEDBACK
+  ════════════════════════════════ -->
+  <div id="screen-feedback" class="screen">
+    <div class="header">
+      <div class="logo">こども<span>AI</span>コンシェルジュ</div>
+    </div>
+
+    <div class="content" style="overflow-y:auto;">
+      <div class="feedback-intro">
+        <span class="emoji">💬</span>
+        <h2>体験はいかがでしたか？</h2>
+        <p>たろうくんのガラスアート体験について<br>教えてください。次回の提案に活かします。</p>
+      </div>
+
+      <div style="text-align:center;margin:0 0 20px;">
+        <div style="font-size:14px;font-weight:600;color:var(--sub);margin-bottom:8px;">総合評価</div>
+        <div class="star-rating" id="stars">
+          <span onclick="rateStar(1)">⭐</span>
+          <span onclick="rateStar(2)">⭐</span>
+          <span onclick="rateStar(3)">⭐</span>
+          <span onclick="rateStar(4)">⭐</span>
+          <span onclick="rateStar(5)">⭐</span>
+        </div>
+        <div style="font-size:14px;color:var(--sub);" id="star-label">タップして評価してください</div>
+      </div>
+
+      <div class="form-section" style="margin-bottom:16px;">
+        <h3>お子さまの様子</h3>
+        <div class="tag-feedback" id="reaction-chips">
+          <span class="chip" onclick="toggleChip(this)">😄 大喜びだった</span>
+          <span class="chip" onclick="toggleChip(this)">😊 楽しんでいた</span>
+          <span class="chip" onclick="toggleChip(this)">😐 普通だった</span>
+          <span class="chip" onclick="toggleChip(this)">😞 合わなかった</span>
+          <span class="chip" onclick="toggleChip(this)">🔁 また行きたいと言ってる</span>
+          <span class="chip" onclick="toggleChip(this)">🆕 違うジャンルも試したい</span>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3>次回に向けて（任意）</h3>
+        <div class="field">
+          <textarea placeholder="気になったこと、次はこんな体験をさせたいなど、なんでも教えてください。"></textarea>
+        </div>
+      </div>
+
+      <div style="height:80px;"></div>
+    </div>
+
+    <div class="sticky-footer">
+      <button class="btn btn-primary" onclick="onFeedbackSubmit()">フィードバックを送信する</button>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════
+       SCREEN 8: ALL DONE
+  ════════════════════════════════ -->
+  <div id="screen-complete" class="screen">
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;text-align:center;">
+      <span style="font-size:72px;display:block;margin-bottom:20px;animation:pop 0.5s ease;">🙌</span>
+      <h2 style="font-size:22px;font-weight:800;margin-bottom:10px;">ありがとうございました！</h2>
+      <p style="font-size:14px;color:var(--sub);line-height:1.8;margin-bottom:32px;">
+        フィードバックをAIが学習しました。<br>
+        来週のプランはさらにたろうくんに<br>ぴったりの体験をご提案します。
+      </p>
+      <div style="background:var(--primary-light);border-radius:14px;padding:20px;width:100%;text-align:left;margin-bottom:24px;">
+        <div style="font-size:13px;font-weight:700;color:var(--primary);margin-bottom:8px;">📬 次回の提案予定</div>
+        <div style="font-size:14px;font-weight:600;">来週土曜日の朝、LINEに通知します</div>
+        <div style="font-size:12px;color:var(--sub);margin-top:4px;">いつでもプッシュ設定から変更できます</div>
+      </div>
+      <button class="btn btn-primary" onclick="goTo('screen-welcome')" style="width:100%;">
+        ← トップに戻る
+      </button>
+      <button class="btn btn-ghost" onclick="showGrowthMap('screen-complete')" style="width:100%;margin-top:10px;">
+        🗺️ 成長マップを見る
+      </button>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════
+       SCREEN 9: 成長マップ
+  ════════════════════════════════ -->
+  <div id="screen-growth-map" class="screen">
+    <div class="header">
+      <button onclick="goTo(mapReturnScreen)" style="background:none;border:none;font-size:22px;cursor:pointer;padding:0;color:var(--text);line-height:1;">←</button>
+      <div class="logo" style="font-size:17px;margin-left:10px;">こども<span>AI</span>コンシェルジュ</div>
+    </div>
+
+    <div style="flex:1;overflow-y:auto;">
+      <!-- ヒーロー -->
+      <div class="growth-hero">
+        <span class="g-avatar" id="growth-avatar">🌱</span>
+        <h2 id="growth-child-name">お子さまの成長マップ</h2>
+        <div class="level-pill" id="growth-total-level">🗺️ 未探険 • 0回の体験</div>
+      </div>
+
+      <div class="content">
+
+        <!-- ① 興味レーダーチャート -->
+        <div class="map-card">
+          <div class="map-card-title">① 🕸️ 興味レーダーチャート</div>
+          <div id="radar-chart" style="min-height:120px;"></div>
+          <div id="growth-cat-bars" style="margin-top:14px;"></div>
+        </div>
+
+        <!-- ② 今月のチャレンジ（疑似実装） -->
+        <div class="map-card">
+          <div class="map-card-title">② 🏆 今月のチャレンジ</div>
+          <div class="challenge-card green">
+            <h4>🌿 この夏チャレンジ：自然体験を2回やろう！</h4>
+            <p>外で体を使った体験はお子さまの成長に抜群の効果があります。</p>
+            <div class="ch-track"><div class="ch-fill" id="ch-nature-bar" style="width:0%"></div></div>
+            <div class="ch-label" id="ch-nature-label">0 / 2 回達成</div>
+          </div>
+          <div class="challenge-card blue">
+            <h4>🎨 アート初挑戦：はじめてのアート体験！</h4>
+            <p>未経験ジャンルに挑戦すると新しい才能が見つかるかも。</p>
+            <div class="ch-track"><div class="ch-fill" id="ch-art-bar" style="width:0%"></div></div>
+            <div class="ch-label" id="ch-art-label">0 / 1 回達成</div>
+          </div>
+        </div>
+
+        <!-- ③ 獲得バッジ（疑似実装） -->
+        <div class="map-card">
+          <div class="map-card-title">③ 🎖️ 獲得バッジ</div>
+          <div class="badge-grid" id="badge-grid"></div>
+        </div>
+
+        <!-- 体験ログ -->
+        <div class="map-card">
+          <div class="map-card-title">📔 体験ログ</div>
+          <div id="growth-log">
+            <div style="text-align:center;padding:24px;color:var(--sub);font-size:14px;">
+              体験を予約するとここに記録されます 🗺️
+            </div>
+          </div>
+        </div>
+
+        <!-- ④ 成長レポートをシェア（疑似実装） -->
+        <div class="map-card">
+          <div class="map-card-title">④ 📤 成長レポートをシェア</div>
+          <div style="background:var(--bg);border-radius:10px;padding:14px;margin-bottom:12px;font-size:13px;color:var(--sub);line-height:1.75;">
+            <div style="font-weight:700;color:var(--text);margin-bottom:4px;">📊 月次成長カード</div>
+            「今月のお子さま：アート2回・科学1回。<br>
+            発見した才能：細かい作業の集中力が抜群！」<br>
+            <span style="color:var(--primary);font-size:12px;">→ 画像として保存・SNSシェアできます（準備中）</span>
+          </div>
+          <button class="share-btn" onclick="showShareToast()">
+            🔗 成長カードを作成してシェアする
+          </button>
+          <button class="btn btn-ghost" onclick="goTo('screen-profile')" style="margin-top:10px;">
+            ← 新しい体験を探す
+          </button>
+        </div>
+
+        <div style="height:20px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ 施設詳細ドロワー ════ -->
+  <div id="facility-drawer" class="drawer">
+    <div class="drawer-overlay" onclick="closeDrawer()"></div>
+    <div class="drawer-panel">
+      <div class="drawer-handle"></div>
+      <div id="drawer-carousel" class="drawer-carousel"></div>
+      <div class="drawer-body">
+        <div id="drawer-tag" class="card-tag" style="margin-bottom:8px;"></div>
+        <h2 id="drawer-name" style="font-size:19px;font-weight:800;margin-bottom:4px;"></h2>
+        <div id="drawer-address" style="font-size:13px;color:var(--sub);margin-bottom:8px;"></div>
+        <div id="drawer-meta" class="card-meta" style="margin-bottom:14px;"></div>
+        <div id="drawer-ai-reason" class="ai-reason-box" style="margin-bottom:10px;"></div>
+        <div id="drawer-benefits" class="benefits-box" style="margin-bottom:14px;"></div>
+        <div id="drawer-reviews"></div>
+        <a id="drawer-website" href="#" target="_blank" rel="noopener"
+           style="display:block;text-align:center;padding:13px;background:#F8F9FF;border:1.5px solid var(--border);border-radius:10px;font-size:14px;font-weight:600;color:var(--primary);text-decoration:none;margin:16px 0 4px;">
+          🔗 公式サイトで予約・詳細確認
+        </a>
+      </div>
+      <div class="drawer-footer">
+        <button class="btn btn-green" onclick="likeFromDrawer()">💚 このプランにする</button>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /app -->
+
+<script>
+  // ── 状態管理 ──
+  let selectedFacility  = null;
+  let fetchedFacilities = [];
+  let seenIds           = new Set();
+  let currentParams     = '';
+  let drawerIdx         = -1;
+  let currentStarRating = 0;
+  let mapReturnScreen   = 'screen-welcome';
+
+  // ── 成長マップ: 定数 ──
+  const AIC_LOG_KEY = 'aic_experience_log';
+  const AIC_CAT_KEY = 'aic_child_name';
+
+  const AIC_CATEGORIES = [
+    { key: 'アート・工作',        emoji: '🎨', color: '#C2185B', shortName: 'アート'  },
+    { key: '科学・プログラミング', emoji: '🔬', color: '#1565C0', shortName: '科学'    },
+    { key: '自然・農業',          emoji: '🌿', color: '#2E7D32', shortName: '自然'    },
+    { key: '料理・食育',          emoji: '🍳', color: '#E65100', shortName: '料理'    },
+    { key: '音楽・演劇',          emoji: '🎵', color: '#6A1B9A', shortName: '音楽'    },
+    { key: 'スポーツ',            emoji: '🏄', color: '#0277BD', shortName: 'スポーツ' },
+  ];
+
+  const AIC_LEVELS = [
+    { min: 0,  icon: '🗺️', label: '未探険'      },
+    { min: 1,  icon: '🌱', label: '入門'         },
+    { min: 3,  icon: '🌿', label: '探索中'       },
+    { min: 6,  icon: '🌟', label: '得意'         },
+    { min: 11, icon: '🏆', label: 'エキスパート' },
+  ];
+
+  function getLevel(count) {
+    return [...AIC_LEVELS].reverse().find(l => count >= l.min) || AIC_LEVELS[0];
+  }
+
+  // ── 体験を保存 ──
+  function saveExperience() {
+    if (!selectedFacility) return;
+    const log = JSON.parse(localStorage.getItem(AIC_LOG_KEY) || '[]');
+    const childName = document.getElementById('child-name').value || 'お子さま';
+    localStorage.setItem(AIC_CAT_KEY, childName);
+    const cat = selectedFacility.category || { label: '体験', emoji: '✨', tag: 'tag-art' };
+    const today = new Date().toLocaleDateString('ja-JP');
+    if (log.find(e => e.place_id === selectedFacility.place_id && e.date === today)) return;
+    log.unshift({
+      id: Date.now(),
+      name: selectedFacility.name,
+      category: cat.label,
+      emoji: cat.emoji || '✨',
+      tag: cat.tag || 'tag-art',
+      place_id: selectedFacility.place_id || '',
+      website: selectedFacility.website || '',
+      date: today,
+    });
+    localStorage.setItem(AIC_LOG_KEY, JSON.stringify(log.slice(0, 50)));
+  }
+
+  function onPaymentConfirmed() {
+    saveExperience();
+    mapReturnScreen = 'screen-success';
+    goTo('screen-success');
+  }
+
+  function showGrowthMap(returnScreen) {
+    mapReturnScreen = returnScreen || 'screen-welcome';
+    renderGrowthMap();
+    goTo('screen-growth-map');
+  }
+
+  // ── 成長マップ描画 ──
+  function renderGrowthMap() {
+    const log = JSON.parse(localStorage.getItem(AIC_LOG_KEY) || '[]');
+    const childName = localStorage.getItem(AIC_CAT_KEY)
+      || document.getElementById('child-name').value || 'お子さま';
+
+    document.getElementById('growth-child-name').textContent = childName + 'の成長マップ';
+
+    const total = log.length;
+    const lv = getLevel(total);
+    document.getElementById('growth-avatar').textContent = lv.icon;
+    document.getElementById('growth-total-level').textContent = `${lv.icon} ${lv.label} • ${total}回の体験`;
+
+    const counts = {};
+    AIC_CATEGORIES.forEach(c => counts[c.key] = 0);
+    log.forEach(e => { if (counts[e.category] !== undefined) counts[e.category]++; });
+
+    // レーダーチャート
+    drawRadarChart(AIC_CATEGORIES.map(c => Math.min(counts[c.key] * 20, 100)));
+
+    // カテゴリ進捗バー（0から伸びるアニメーション）
+    document.getElementById('growth-cat-bars').innerHTML = AIC_CATEGORIES.map(c => {
+      const cnt = counts[c.key];
+      const pct = Math.min(cnt * 20, 100);
+      const clv = getLevel(cnt);
+      return `<div class="cat-row">
+        <div class="cat-label-wrap"><span class="cat-emoji">${c.emoji}</span><span class="cat-name">${c.shortName}</span></div>
+        <div class="cat-track"><div class="cat-fill" data-target="${pct}" style="width:0%;background:${c.color}"></div></div>
+        <span class="cat-badge">${clv.icon}${clv.label}</span>
+        <div class="cat-cnt">${cnt}回</div>
+      </div>`;
+    }).join('');
+    // バーをアニメーション
+    setTimeout(() => {
+      document.querySelectorAll('#growth-cat-bars .cat-fill[data-target]').forEach(el => {
+        el.style.width = el.dataset.target + '%';
+      });
+    }, 80);
+    // レベルアップ検知
+    checkLevelUps(counts);
+
+    // ② チャレンジ更新
+    const natureCnt = counts['自然・農業'];
+    const artCnt    = counts['アート・工作'];
+    document.getElementById('ch-nature-bar').style.width   = Math.min(natureCnt / 2 * 100, 100) + '%';
+    document.getElementById('ch-nature-label').textContent = natureCnt >= 2 ? '✅ 達成！' : `${natureCnt} / 2 回達成`;
+    document.getElementById('ch-art-bar').style.width      = artCnt >= 1 ? '100%' : '0%';
+    document.getElementById('ch-art-label').textContent    = artCnt >= 1 ? '✅ 達成！' : '0 / 1 回達成';
+
+    // ③ バッジ
+    const genres = Object.values(counts).filter(v => v > 0).length;
+    const badges = [
+      { icon: '🌱', name: 'はじめての<br>体験！',  earned: total >= 1 },
+      { icon: '🎨', name: 'アート<br>デビュー',    earned: counts['アート・工作'] >= 1 },
+      { icon: '🔬', name: '科学者<br>の卵',         earned: counts['科学・プログラミング'] >= 1 },
+      { icon: '🌟', name: '3ジャンル<br>制覇！',    earned: genres >= 3 },
+      { icon: '🍳', name: '料理人<br>デビュー',     earned: counts['料理・食育'] >= 1 },
+      { icon: '🌈', name: '全ジャンル<br>制覇！',   earned: genres >= 6 },
+      { icon: '🏆', name: '体験<br>マスター',        earned: total >= 5 },
+      { icon: '💎', name: '10回<br>達成！',          earned: total >= 10 },
+    ];
+    document.getElementById('badge-grid').innerHTML = badges.map(b => `
+      <div class="badge-cell">
+        <div class="badge-icon ${b.earned ? 'earned' : 'locked'}">${b.icon}</div>
+        <div class="badge-lbl ${b.earned ? '' : 'locked'}">${b.name}</div>
+      </div>`).join('');
+
+    // 体験ログ
+    document.getElementById('growth-log').innerHTML = log.length
+      ? log.slice(0, 10).map(e => `
+          <div class="log-item">
+            <div class="log-icon-wrap">${e.emoji}</div>
+            <div class="log-body">
+              <div class="log-name">${e.name}</div>
+              <div class="log-meta">
+                <span class="card-tag ${e.tag}" style="font-size:10px;padding:2px 6px;">${e.category}</span>
+                <span class="log-date">${e.date}</span>
+              </div>
+            </div>
+          </div>`).join('')
+      : '<div style="text-align:center;padding:24px;color:var(--sub);font-size:14px;">体験を予約するとここに記録されます 🗺️</div>';
+  }
+
+  // ── レーダーチャート（SVG） ──
+  function drawRadarChart(scores) {
+    const n = 6, cx = 130, cy = 128, maxR = 82;
+    function pt(i, r) {
+      const a = (Math.PI * 2 * i / n) - Math.PI / 2;
+      return [cx + r * Math.cos(a), cy + r * Math.sin(a)];
+    }
+    const grids = [0.25, 0.5, 0.75, 1.0].map(p => {
+      const pts = AIC_CATEGORIES.map((_, i) => pt(i, maxR * p).join(',')).join(' ');
+      return `<polygon points="${pts}" fill="none" stroke="#E5E7EB" stroke-width="1"/>`;
+    }).join('');
+    const spokes = AIC_CATEGORIES.map((_, i) => {
+      const [x, y] = pt(i, maxR);
+      return `<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="#E5E7EB" stroke-width="1"/>`;
+    }).join('');
+    const dataPts = scores.map((s, i) => pt(i, maxR * Math.max(s, 4) / 100).join(',')).join(' ');
+    const dataArea = `<polygon points="${dataPts}" fill="rgba(79,127,255,0.18)" stroke="#4F7FFF" stroke-width="2.5" stroke-linejoin="round"/>`;
+    const dots = scores.map((s, i) => {
+      const [x, y] = pt(i, maxR * Math.max(s, 4) / 100);
+      return `<circle cx="${x}" cy="${y}" r="4.5" fill="#4F7FFF" stroke="white" stroke-width="2"/>`;
+    }).join('');
+    const lbls = AIC_CATEGORIES.map((c, i) => {
+      const [x, y] = pt(i, maxR + 22);
+      const anchor = x < cx - 5 ? 'end' : x > cx + 5 ? 'start' : 'middle';
+      return `<text x="${x}" y="${y-3}" text-anchor="${anchor}" font-size="11" fill="#6B7280" font-family="sans-serif">${c.emoji}</text>
+              <text x="${x}" y="${y+10}" text-anchor="${anchor}" font-size="10" fill="#6B7280" font-family="sans-serif" font-weight="600">${c.shortName}</text>`;
+    }).join('');
+    document.getElementById('radar-chart').innerHTML =
+      `<svg viewBox="0 0 260 255" width="100%" style="max-width:280px;display:block;margin:0 auto;">
+        ${grids}${spokes}${dataArea}${dots}${lbls}
+       </svg>`;
+  }
+
+  // ── レベルアップ検知＋ポップアップ ──
+  function checkLevelUps(counts) {
+    const seen   = JSON.parse(localStorage.getItem('aic_lvl_seen') || '{}');
+    const newSeen = {};
+    const upgrades = [];
+    AIC_CATEGORIES.forEach(c => {
+      const lv    = getLevel(counts[c.key]);
+      const lvIdx = AIC_LEVELS.indexOf(lv);
+      const prev  = seen[c.key] ?? 0;
+      newSeen[c.key] = Math.max(lvIdx, prev);
+      if (lvIdx > prev && lvIdx > 0) upgrades.push({ cat: c, level: lv });
+    });
+    localStorage.setItem('aic_lvl_seen', JSON.stringify(newSeen));
+    if (!upgrades.length) return;
+    let delay = 750;
+    upgrades.forEach(u => {
+      setTimeout(() => showLevelUpPopup(u.cat, u.level), delay);
+      delay += 2100;
+    });
+  }
+
+  function showLevelUpPopup(cat, level) {
+    const bd = document.createElement('div');
+    bd.className = 'lu-backdrop';
+    const pop = document.createElement('div');
+    pop.className = 'lu-popup';
+    pop.innerHTML = `
+      <span class="lu-emoji">${cat.emoji}</span>
+      <div class="lu-cat">${cat.key}</div>
+      <div class="lu-lbl">${level.icon} ${level.label}に到達！</div>
+      <div class="lu-stars">⭐ ⭐ ⭐</div>
+    `;
+    document.body.appendChild(bd);
+    document.body.appendChild(pop);
+    const close = () => {
+      bd.classList.add('out'); pop.classList.add('out');
+      setTimeout(() => { bd.remove(); pop.remove(); }, 380);
+    };
+    bd.addEventListener('click', close);
+    setTimeout(close, 1800);
+  }
+
+  // ── スキル獲得エフェクト（フィードバック送信後） ──
+  function onFeedbackSubmit() {
+    const cat = selectedFacility?.category || { emoji: '✨', label: '体験', key: '体験' };
+    showAchievementEffect(cat, () => goTo('screen-complete'));
+  }
+
+  function showAchievementEffect(cat, cb) {
+    const overlay = document.createElement('div');
+    overlay.className = 'ach-overlay';
+    overlay.innerHTML = `
+      <div class="ach-particles" id="ach-pts"></div>
+      <div class="ach-badge">${cat.emoji}</div>
+      <div class="ach-title">スキル獲得！</div>
+      <div class="ach-sub">${cat.label || cat.key} 経験値 +1</div>
+    `;
+    document.body.appendChild(overlay);
+    // パーティクル
+    const pts = overlay.querySelector('#ach-pts');
+    ['⭐','🌟','✨','💫','🎉','⭐','🌟','✨'].forEach(e => {
+      const p = document.createElement('span');
+      p.textContent = e;
+      p.style.cssText = `position:absolute;font-size:${16+Math.random()*18}px;`
+        + `left:${5+Math.random()*90}%;top:${5+Math.random()*90}%;`
+        + `animation:xp-float ${1.1+Math.random()*0.9}s ease forwards;`
+        + `animation-delay:${Math.random()*0.5}s;`;
+      pts.appendChild(p);
+    });
+    setTimeout(() => {
+      overlay.classList.add('out');
+      setTimeout(() => { overlay.remove(); cb?.(); }, 420);
+    }, 2100);
+  }
+
+  // ④ シェアトースト
+  function showShareToast() {
+    const t = document.createElement('div');
+    t.style.cssText = 'position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#1A1A2E;color:white;padding:12px 20px;border-radius:10px;font-size:14px;font-weight:600;z-index:999;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,0.3);';
+    t.textContent = '📊 成長カード機能は近日公開予定です！';
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 2800);
+  }
+
+  // ── ナビゲーション ──
+  function goTo(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    window.scrollTo(0, 0);
+    if (id === 'screen-loading') startLoadingAnimation();
+  }
+  function toggleChip(el) { el.classList.toggle('selected'); }
+
+  // ── カード: 気になる ──
+  function likeCard(n) {
+    document.querySelectorAll('.proposal-card').forEach(c => c.classList.remove('picked'));
+    document.getElementById('card-' + n).classList.add('picked');
+    selectedFacility = fetchedFacilities[n - 1] || null;
+    const btn = document.getElementById('confirm-btn');
+    btn.disabled = false;
+    btn.style.opacity = '1';
+  }
+
+  // ── カード: 違う → 差し替え ──
+  async function nopeCard(n) {
+    const card = document.getElementById('card-' + n);
+    card.style.opacity = '0.35';
+    card.style.pointerEvents = 'none';
+    const exclude = [...seenIds].join(',');
+    try {
+      const resp = await fetch(`/api/facilities?${currentParams}&exclude=${exclude}&limit=1`);
+      const data = await resp.json();
+      if (data.length) {
+        fetchedFacilities[n - 1] = data[0];
+        seenIds.add(data[0].place_id);
+        card.outerHTML = buildCard(data[0], n);
+      } else {
+        card.innerHTML = '<div style="padding:20px;text-align:center;color:var(--sub);font-size:13px;">他の候補がありません</div>';
+        card.style.opacity = '1';
+      }
+    } catch {
+      card.style.opacity = '1';
+      card.style.pointerEvents = '';
+    }
+  }
+
+  // ── 次の3件 ──
+  async function loadNextBatch() {
+    const btn = document.getElementById('next-batch-btn');
+    btn.textContent = '読み込み中…';
+    btn.disabled = true;
+    const exclude = [...seenIds].join(',');
+    try {
+      const resp = await fetch(`/api/facilities?${currentParams}&exclude=${exclude}&limit=3`);
+      const data = await resp.json();
+      if (!data.length) { btn.textContent = 'これ以上の候補がありません'; return; }
+      selectedFacility = null;
+      const confirmBtn = document.getElementById('confirm-btn');
+      confirmBtn.disabled = true;
+      confirmBtn.style.opacity = '0.45';
+      renderProposals(data);
+    } finally {
+      btn.textContent = '次の3件を見る →';
+      btn.disabled = false;
+    }
+  }
+
+  // ── カードHTML生成 ──
+  function buildCard(f, n) {
+    const cat    = f.category || { label: '体験', emoji: '✨', tag: 'tag-art', bg: 'card-img-1' };
+    const photos = f.photo_urls || [];
+    const score  = f.match_score || 75;
+
+    const imgs = photos.length
+      ? photos.map((u, i) => `<div class="cimg ${i===0?'active':''}" style="background-image:url(${u})"></div>`).join('')
+      : `<div class="cimg active ${cat.bg}">${cat.emoji}</div>`;
+    const nav = photos.length > 1
+      ? `<button class="carousel-btn left"  onclick="event.stopPropagation();photoPrev(this)">‹</button>
+         <button class="carousel-btn right" onclick="event.stopPropagation();photoNext(this)">›</button>
+         <div class="carousel-dots">${photos.map((_,i)=>`<span class="cdot ${i===0?'active':''}"></span>`).join('')}</div>` : '';
+
+    const aiReason = f.ai_reason
+      ? `<div class="ai-reason-box"><div class="ai-reason-label">🤖 AIの推薦理由</div><div class="ai-reason-text">${f.ai_reason}</div></div>` : '';
+
+    const benefits = (f.benefits || []).length
+      ? `<div class="benefits-box"><div class="benefits-label">この体験で得られること</div>${(f.benefits||[]).map(b=>`<div class="benefit-item">${b}</div>`).join('')}</div>` : '';
+
+    return `
+      <div class="proposal-card" id="card-${n}" data-idx="${n-1}">
+        <div class="card-carousel">
+          <div class="carousel-imgs">${imgs}</div>
+          ${nav}
+          <div class="match-badge">${score}% マッチ</div>
+        </div>
+        <div class="card-body">
+          <div class="card-tag ${cat.tag}">${cat.label}</div>
+          <h3>${f.name}</h3>
+          <div class="location">📍 ${f.short_address || f.address}</div>
+          <div class="card-meta"><span>⭐ ${f.rating??'—'}</span><span>💬 ${f.review_count??0}件の口コミ</span></div>
+          ${aiReason}${benefits}
+          <div class="pick-indicator">💚 このプランを選択中</div>
+        </div>
+        <div class="card-actions">
+          <button class="btn-nope"   onclick="nopeCard(${n})">✕ 違う</button>
+          <button class="btn-detail" onclick="openDrawer(${n-1})">詳細 ▼</button>
+          <button class="btn-like"   onclick="likeCard(${n})">💚 気になる</button>
+        </div>
+      </div>`;
+  }
+
+  // ── 提案描画 ──
+  function renderProposals(facilities) {
+    fetchedFacilities = facilities;
+    facilities.forEach(f => seenIds.add(f.place_id));
+    const childName = document.getElementById('child-name').value || 'お子さま';
+    document.getElementById('proposal-sub').textContent =
+      `AIが${childName}のプロフィールをもとに厳選しました。「気になる」か「違う」で反応してください。`;
+    document.getElementById('proposal-container').innerHTML =
+      facilities.length
+        ? facilities.map((f, i) => buildCard(f, i+1)).join('')
+        : '<p style="text-align:center;color:#6B7280;padding:20px;">施設データが見つかりませんでした。</p>';
+  }
+
+  // ── 写真カルーセル ──
+  function photoPrev(btn) { rotatePhoto(btn.closest('.card-carousel, .drawer-carousel'), -1); }
+  function photoNext(btn) { rotatePhoto(btn.closest('.card-carousel, .drawer-carousel'),  1); }
+  function rotatePhoto(carousel, dir) {
+    const imgs = [...carousel.querySelectorAll('.cimg')];
+    const dots = [...carousel.querySelectorAll('.cdot')];
+    const cur  = imgs.findIndex(i => i.classList.contains('active'));
+    const next = (cur + dir + imgs.length) % imgs.length;
+    imgs[cur].classList.remove('active'); imgs[next].classList.add('active');
+    if (dots[cur]) dots[cur].classList.remove('active');
+    if (dots[next]) dots[next].classList.add('active');
+  }
+
+  // ── 詳細ドロワー ──
+  function openDrawer(idx) {
+    const f = fetchedFacilities[idx]; if (!f) return;
+    drawerIdx = idx;
+    const cat = f.category || {};
+    document.getElementById('drawer-tag').className   = `card-tag ${cat.tag||'tag-art'}`;
+    document.getElementById('drawer-tag').textContent = cat.label || '体験';
+    document.getElementById('drawer-name').textContent    = f.name;
+    document.getElementById('drawer-address').textContent = '📍 ' + f.address;
+    document.getElementById('drawer-meta').innerHTML =
+      `<span>⭐ ${f.rating??'—'}</span><span>💬 ${f.review_count??0}件の口コミ</span>`;
+    document.getElementById('drawer-ai-reason').innerHTML = f.ai_reason
+      ? `<div class="ai-reason-label">🤖 AIの推薦理由</div><div class="ai-reason-text">${f.ai_reason}</div>` : '';
+    document.getElementById('drawer-benefits').innerHTML = (f.benefits||[]).length
+      ? `<div class="benefits-label">この体験で得られること</div>${(f.benefits||[]).map(b=>`<div class="benefit-item">${b}</div>`).join('')}` : '';
+    document.getElementById('drawer-reviews').innerHTML = (f.reviews||[]).slice(0,3).map(r =>
+      `<div class="review-item"><div class="review-meta">⭐${r.rating} ${r.author} · ${r.time}</div><div class="review-text">${r.text}</div></div>`
+    ).join('') ? `<div class="reviews-title">口コミ（${f.review_count}件中 最新3件）</div>` + (f.reviews||[]).slice(0,3).map(r =>
+      `<div class="review-item"><div class="review-meta">⭐${r.rating} ${r.author} · ${r.time}</div><div class="review-text">${r.text}</div></div>`
+    ).join('') : '';
+    document.getElementById('drawer-website').href = f.website || '#';
+
+    const dc = document.getElementById('drawer-carousel');
+    const photos = f.photo_urls || [];
+    dc.style.display = photos.length ? 'block' : 'none';
+    if (photos.length) {
+      dc.innerHTML = `<div class="carousel-imgs">${photos.map((u,i)=>`<div class="cimg ${i===0?'active':''}" style="background-image:url(${u})"></div>`).join('')}</div>`
+        + (photos.length>1 ? `<button class="carousel-btn left" onclick="photoPrev(this)">‹</button><button class="carousel-btn right" onclick="photoNext(this)">›</button><div class="carousel-dots">${photos.map((_,i)=>`<span class="cdot ${i===0?'active':''}"></span>`).join('')}</div>` : '');
+    }
+    document.getElementById('facility-drawer').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeDrawer() {
+    document.getElementById('facility-drawer').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  function likeFromDrawer() { closeDrawer(); if (drawerIdx >= 0) likeCard(drawerIdx + 1); }
+
+  // ── 予約画面 ──
+  function confirmPlan() {
+    if (selectedFacility) {
+      const f = selectedFacility, cat = f.category || {};
+      const header = document.getElementById('booking-img-header');
+      const firstPhoto = (f.photo_urls||[])[0];
+      if (firstPhoto) {
+        header.style.cssText = `background-image:url(${firstPhoto});background-size:cover;background-position:center;`;
+        header.textContent = '';
+      } else {
+        header.style.cssText = '';
+        header.className = `img-header ${cat.bg||'card-img-1'}`;
+        header.textContent = cat.emoji || '✨';
+      }
+      document.getElementById('booking-name').textContent    = f.name || '';
+      document.getElementById('booking-address').textContent = '📍 ' + (f.address || '');
+      document.getElementById('booking-website-link').href   = f.website || '#';
+    }
+    goTo('screen-booking');
+  }
+  function checkCVV(input) {
+    const btn = document.getElementById('pay-btn');
+    const ok  = input.value.length === 3;
+    btn.disabled = !ok; btn.style.opacity = ok ? '1' : '0.45';
+  }
+
+  // ── 星評価 ──
+  const starLabels = ['', 'うーん…', 'まあまあ', 'よかった！', 'とても良かった！', '最高でした！'];
+  function rateStar(n) {
+    currentStarRating = n;
+    document.querySelectorAll('#stars span').forEach((s, i) => s.classList.toggle('lit', i < n));
+    document.getElementById('star-label').textContent = starLabels[n];
+  }
+
+  // ── ローディング + API fetch ──
+  function startLoadingAnimation() {
+    seenIds.clear();
+    selectedFacility = null;
+    document.getElementById('confirm-btn').disabled = true;
+    document.getElementById('confirm-btn').style.opacity = '0.45';
+
+    const steps    = [{id:'ls-1',delay:400,dur:800},{id:'ls-2',delay:1200,dur:600},{id:'ls-3',delay:1800,dur:700},{id:'ls-4',delay:2500,dur:500}];
+    const percents = [20, 45, 75, 95];
+    const emojis   = ['🔍','🧠','📅','✨'];
+    const titles   = ['施設を検索中...','プロフィールと照合中...','空き状況を確認中...','厳選完了！'];
+    const bar      = document.getElementById('ai-progress-bar');
+    bar.style.width = '0';
+    steps.forEach(s => { const el = document.getElementById(s.id); el.style.opacity='0.4'; el.querySelector('span').textContent='⏳'; });
+    steps.forEach((s, i) => {
+      setTimeout(() => {
+        bar.style.width = percents[i] + '%';
+        document.getElementById('loading-emoji').textContent = emojis[i];
+        document.getElementById('loading-title').textContent = titles[i];
+        const el = document.getElementById(s.id);
+        el.style.opacity = '1'; el.querySelector('span').textContent = '⏳';
+        setTimeout(() => { el.querySelector('span').textContent = '✅'; }, s.dur);
+      }, s.delay);
+    });
+
+    // プロファイルをAPIに渡す
+    const genreMap = {'アート・工作':'アート','農業・自然体験':'農業','科学・プログラミング':'科学','音楽・演劇':'音楽','スポーツ体験':'スポーツ','料理・食育':'料理'};
+    const genres = [...document.querySelectorAll('#genre-chips .chip.selected')]
+      .map(el => genreMap[el.textContent.trim().replace(/^\S+\s/,'')] || '');
+    const personality = [...document.querySelectorAll('#personality-chips .chip.selected')]
+      .map(el => el.textContent.trim().replace(/^\S+\s/,'')).join(',');
+    const params = new URLSearchParams({
+      genres:      genres.filter(Boolean).join(','),
+      name:        document.getElementById('child-name').value || 'お子さま',
+      age:         document.getElementById('child-age').value  || '',
+      personality: personality,
+      policy:      [...document.querySelectorAll('#policy-chips .chip.selected')].map(el => el.textContent.trim().replace(/^\S+\s/, '')).join(',') || '',
+      limit:       '3',
+    });
+    currentParams = params.toString();
+
+    Promise.all([
+      new Promise(r => setTimeout(r, 3400)),
+      fetch(`/api/facilities?${currentParams}`).then(r => r.json()).catch(() => [])
+    ]).then(([, data]) => {
+      bar.style.width = '100%';
+      renderProposals(data);
+      goTo('screen-proposals');
+    });
+  }
+</script>
+</body>
+</html>
