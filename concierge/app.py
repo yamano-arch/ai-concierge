@@ -22,6 +22,7 @@ PLACES_API_KEY  = os.getenv('CONCIERGE_PLACES_API_KEY', '')
 ANTHROPIC_KEY   = os.getenv('ANTHROPIC_API_KEY', '')
 BASE_DIR        = os.path.dirname(__file__)
 FACILITIES_FILE = os.path.join(BASE_DIR, 'facilities.json')
+EVENTS_FILE     = os.path.join(BASE_DIR, 'events.json')
 
 app = Flask(__name__)
 
@@ -54,12 +55,15 @@ def calc_match_score(facility: dict, selected_genres: list[str]) -> int:
     cat_label = facility.get('category', {}).get('label', '')
     if selected_genres and any(g in cat_label for g in selected_genres):
         score += 15
-    rating = facility.get('rating') or 4.0
-    score += int((float(rating) - 4.0) * 10)
+    rating = facility.get('rating')
+    if rating is not None:
+        score += int((float(rating) - 4.0) * 10)
     review_count = facility.get('review_count') or 0
     score += min(int(review_count / 20), 10)
     if facility.get('has_photos'):
         score += 3
+    if facility.get('source') == 'event':
+        score += 5  # 期間限定イベントは希少性ボーナス
     return min(score, 99)
 
 
@@ -71,23 +75,29 @@ def generate_ai_content(profile: dict, facility: dict) -> tuple[str, list[str]]:
     policy      = profile.get('policy', '')
     cat_label   = facility.get('category', {}).get('label', '')
 
-    reviews_text = '\n'.join(
-        f"「{r['text'][:150]}」"
-        for r in (facility.get('reviews') or [])[:2]
-        if r.get('text')
-    )
+    is_event = facility.get('source') == 'event'
+    if is_event:
+        event_context = f"- 開催日時: {facility.get('event_display', '')}\n- 概要: {facility.get('summary', '')[:200]}"
+        reviews_text = ''
+    else:
+        event_context = ''
+        reviews_text = '\n'.join(
+            f"「{r['text'][:150]}」"
+            for r in (facility.get('reviews') or [])[:2]
+            if r.get('text')
+        )
 
-    prompt = f"""子ども体験施設の推薦コンテンツを生成してください。
+    prompt = f"""子ども体験{'イベント' if is_event else '施設'}の推薦コンテンツを生成してください。
 
 子どもの情報:
 - 名前: {child_name}（{age}）
 - 性格・特徴: {personality or '（未入力）'}
 - 教育方針: {policy or '（未入力）'}
 
-施設:
+{'イベント' if is_event else '施設'}:
 - 名前: {facility['name']}
 - カテゴリ: {cat_label}
-{f"- 口コミ抜粋:{chr(10)}{reviews_text}" if reviews_text else ""}
+{event_context if is_event else (f"- 口コミ抜粋:{chr(10)}{reviews_text}" if reviews_text else "")}
 
 以下の形式で出力してください（余計な説明は不要）:
 
@@ -139,6 +149,7 @@ def enrich(facility: dict, genres: list[str]) -> dict:
         'photo_urls':   [f"/api/photo?ref={quote(r, safe='')}" for r in refs],
         'match_score':  calc_match_score({**facility, 'category': cat}, genres),
         'top_review':   top_review,
+        'is_event':     facility.get('source') == 'event',
     }
 
 
@@ -161,9 +172,14 @@ def get_facilities():
 
     with open(FACILITIES_FILE, 'r', encoding='utf-8') as f:
         all_facilities = json.load(f)
+    all_events = []
+    if os.path.exists(EVENTS_FILE):
+        with open(EVENTS_FILE, 'r', encoding='utf-8') as f:
+            all_events = json.load(f)
+    all_combined = all_facilities + all_events
 
     exclude_ids = set(filter(None, exclude_raw.split(',')))
-    facilities  = [f for f in all_facilities if f.get('place_id') not in exclude_ids]
+    facilities  = [f for f in all_combined if f.get('place_id') not in exclude_ids]
 
     # ジャンルフィルタ
     genres: list[str] = []
@@ -178,9 +194,16 @@ def get_facilities():
     else:
         matched = facilities
 
-    # 評価順 → 上位30件をシャッフル → limit件抽出
-    matched.sort(key=lambda x: float(x.get('rating') or 0), reverse=True)
-    pool     = matched[:30]
+    # 施設とイベントを分離してプール構築（イベントは常に混入）
+    events_pool    = [f for f in matched if f.get('source') == 'event']
+    facility_pool  = [f for f in matched if f.get('source') != 'event']
+    facility_pool.sort(key=lambda x: float(x.get('rating') or 0), reverse=True)
+    random.shuffle(events_pool)
+    random.shuffle(facility_pool[:30])
+    # イベントを最大1件、残りを施設で埋める
+    event_slots   = min(1, len(events_pool), max(0, limit - 1))
+    facility_slots = limit - event_slots
+    pool = events_pool[:event_slots] + facility_pool[:facility_slots + 10]
     random.shuffle(pool)
     selected = [enrich(f, genres) for f in pool[:limit]]
 
