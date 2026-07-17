@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: kodomo-ai-concierge
+    env: python
+    buildCommand: pip install -r concierge/requirements.txt
+    startCommand: gunicorn -w 2 -b 0.0.0.0:$PORT concierge.app:app
+    envVars:
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: CONCIERGE_PLACES_API_KEY
+        sync: false

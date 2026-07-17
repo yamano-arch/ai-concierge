@@ -63,7 +63,7 @@ def calc_match_score(facility: dict, selected_genres: list[str]) -> int:
     if facility.get('has_photos'):
         score += 3
     if facility.get('source') == 'event':
-        score += 5  # 期間限定イベントは希少性ボーナス
+        score += 5
     return min(score, 99)
 
 
@@ -73,6 +73,8 @@ def generate_ai_content(profile: dict, facility: dict) -> tuple[str, list[str]]:
     age         = profile.get('age', '')
     personality = profile.get('personality', '')
     policy      = profile.get('policy', '')
+    purpose     = profile.get('purpose', '')
+    mood        = profile.get('mood', '')
     cat_label   = facility.get('category', {}).get('label', '')
 
     is_event = facility.get('source') == 'event'
@@ -87,12 +89,26 @@ def generate_ai_content(profile: dict, facility: dict) -> tuple[str, list[str]]:
             if r.get('text')
         )
 
+    budget      = profile.get('budget', '')
+    time_of_day = profile.get('time_of_day', '')
+    join_style  = profile.get('join_style', '')
+    group_type  = profile.get('group_type', '')
+
+    visit_parts = []
+    if purpose:     visit_parts.append(f"- 目的: {purpose}")
+    if mood:        visit_parts.append(f"- 気分: {mood}")
+    if budget:      visit_parts.append(f"- 予算: {budget}")
+    if time_of_day: visit_parts.append(f"- 時間帯: {time_of_day}")
+    if join_style:  visit_parts.append(f"- 参加スタイル: {join_style}")
+    if group_type:  visit_parts.append(f"- 参加人数: {group_type}")
+    visit_context = ('\n今回の条件:\n' + '\n'.join(visit_parts)) if visit_parts else ''
+
     prompt = f"""子ども体験{'イベント' if is_event else '施設'}の推薦コンテンツを生成してください。
 
 子どもの情報:
 - 名前: {child_name}（{age}）
 - 性格・特徴: {personality or '（未入力）'}
-- 教育方針: {policy or '（未入力）'}
+- 教育方針: {policy or '（未入力）'}{visit_context}
 
 {'イベント' if is_event else '施設'}:
 - 名前: {facility['name']}
@@ -163,11 +179,18 @@ def get_facilities():
     genres_raw  = request.args.get('genres', '')
     limit       = min(int(request.args.get('limit', 3)), 10)
     exclude_raw = request.args.get('exclude', '')
+    date_filter = request.args.get('date', '')
     profile = {
         'name':        request.args.get('name', 'お子さま'),
         'age':         request.args.get('age', ''),
         'personality': request.args.get('personality', ''),
         'policy':      request.args.get('policy', ''),
+        'purpose':     request.args.get('purpose', ''),
+        'mood':        request.args.get('mood', ''),
+        'budget':      request.args.get('budget', ''),
+        'time_of_day': request.args.get('time_of_day', ''),
+        'join_style':  request.args.get('join_style', ''),
+        'group_type':  request.args.get('group_type', ''),
     }
 
     with open(FACILITIES_FILE, 'r', encoding='utf-8') as f:
@@ -175,7 +198,12 @@ def get_facilities():
     all_events = []
     if os.path.exists(EVENTS_FILE):
         with open(EVENTS_FILE, 'r', encoding='utf-8') as f:
-            all_events = json.load(f)
+            raw_events = json.load(f)
+        # 希望日が指定されていればその日以降のイベントのみ残す
+        if date_filter:
+            all_events = [e for e in raw_events if e.get('event_datetime', '') >= date_filter]
+        else:
+            all_events = raw_events
     all_combined = all_facilities + all_events
 
     exclude_ids = set(filter(None, exclude_raw.split(',')))

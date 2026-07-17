@@ -6,17 +6,32 @@
 <title>こどもコンシェルジュ — AI体験提案サービス</title>
 <style>
   :root {
-    --primary: #4F7FFF;
+    /* ── Brand ── */
+    --primary:       #4F7FFF;
     --primary-light: #EEF2FF;
-    --accent: #FF6B6B;
-    --green: #34C780;
-    --text: #1A1A2E;
-    --sub: #6B7280;
+    --accent:        #F43F5E;
+    --green:         #22C55E;
+
+    /* ── Ink ── */
+    --text:  #111827;
+    --dark:  #111827;   /* alias — removes undefined-var bug */
+    --sub:   #6B7280;
+
+    /* ── Surface ── */
     --border: #E5E7EB;
-    --bg: #F8F9FF;
-    --card: #FFFFFF;
-    --shadow: 0 4px 24px rgba(79,127,255,0.10);
-    --radius: 16px;
+    --bg:     #F9FAFB;
+    --card:   #FFFFFF;
+
+    /* ── Elevation (neutral, not blue-tinted) ── */
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow:    0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+    --shadow-lg: 0 8px 24px rgba(0,0,0,0.11), 0 4px 8px rgba(0,0,0,0.06);
+
+    /* ── Radius ── */
+    --r-sm: 8px;
+    --r:    12px;
+    --r-lg: 20px;
+    --radius: 12px;  /* keep alias for existing usage */
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -83,20 +98,33 @@
 
   /* ── HERO ── */
   .hero {
-    background: linear-gradient(135deg, #4F7FFF 0%, #7B5EA7 100%);
-    padding: 40px 24px 48px;
+    background: var(--primary);
+    padding: 44px 24px 52px;
     color: white;
     text-align: center;
   }
-  .hero .emoji { font-size: 56px; margin-bottom: 12px; display: block; }
-  .hero h1 { font-size: 22px; font-weight: 800; line-height: 1.4; margin-bottom: 10px; }
-  .hero p { font-size: 14px; opacity: 0.88; line-height: 1.7; }
+  .hero .emoji { font-size: 52px; margin-bottom: 14px; display: block; }
+  .hero h1 { font-size: 21px; font-weight: 800; line-height: 1.45; margin-bottom: 10px; letter-spacing: -0.02em; }
+  .hero p { font-size: 13px; opacity: 0.82; line-height: 1.75; }
 
   /* ── CONTENT AREA ── */
   .content { padding: 24px 20px; flex: 1; }
 
   /* ── FORM ── */
-  .form-section { margin-bottom: 28px; }
+  .profile-section-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 0 8px;
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--sub);
+    margin: 24px 0 10px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--border);
+  }
+  .form-section { margin-bottom: 4px; }
   .form-section h3 {
     font-size: 13px;
     font-weight: 700;
@@ -134,9 +162,12 @@
   .field textarea { resize: none; height: 88px; }
 
   /* ── CHIP SELECTOR ── */
-  .chip-group { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip-group { display: flex; flex-wrap: wrap; gap: 6px; }
   .chip {
-    padding: 8px 14px;
+    padding: 10px 14px;
+    min-height: 40px;
+    display: inline-flex;
+    align-items: center;
     border: 1.5px solid var(--border);
     border-radius: 20px;
     font-size: 13px;
@@ -144,9 +175,12 @@
     cursor: pointer;
     background: white;
     color: var(--sub);
-    transition: all 0.15s;
+    transition: border-color 0.12s, background 0.12s, color 0.12s;
     user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    line-height: 1.2;
   }
+  .chip:active { transform: scale(0.96); }
   .chip.selected {
     border-color: var(--primary);
     background: var(--primary-light);
@@ -157,34 +191,37 @@
   .btn {
     display: block;
     width: 100%;
-    padding: 16px;
+    padding: 15px 20px;
     border: none;
-    border-radius: 12px;
-    font-size: 16px;
+    border-radius: var(--r);
+    font-size: 15px;
     font-weight: 700;
     font-family: inherit;
     cursor: pointer;
-    transition: all 0.15s;
+    transition: background 0.15s, transform 0.1s, opacity 0.15s;
     text-align: center;
+    letter-spacing: -0.01em;
   }
   .btn-primary {
-    background: linear-gradient(135deg, #4F7FFF, #7B5EA7);
+    background: var(--primary);
     color: white;
-    box-shadow: 0 4px 16px rgba(79,127,255,0.35);
+    box-shadow: var(--shadow-sm);
   }
-  .btn-primary:hover { opacity: 0.92; transform: translateY(-1px); }
-  .btn-primary:active { transform: translateY(0); }
+  .btn-primary:hover  { background: #3D6EEE; }
+  .btn-primary:active { transform: scale(0.98); }
   .btn-ghost {
     background: white;
     color: var(--sub);
     border: 1.5px solid var(--border);
     margin-top: 10px;
   }
+  .btn-ghost:hover { background: var(--bg); }
   .btn-green {
-    background: linear-gradient(135deg, #34C780, #0EA85A);
+    background: var(--green);
     color: white;
-    box-shadow: 0 4px 16px rgba(52,199,128,0.30);
+    box-shadow: var(--shadow-sm);
   }
+  .btn-green:hover { background: #16A34A; }
 
   .sticky-footer {
     position: sticky;
@@ -198,14 +235,15 @@
   .proposal-card {
     background: var(--card);
     border-radius: var(--radius);
-    border: 1.5px solid var(--border);
-    margin-bottom: 20px;
+    border: 1px solid var(--border);
+    margin-bottom: 16px;
     overflow: hidden;
+    box-shadow: var(--shadow-sm);
     transition: border-color 0.2s, box-shadow 0.2s;
   }
   .proposal-card.picked {
     border-color: var(--green);
-    box-shadow: 0 0 0 3px rgba(52,199,128,0.18);
+    box-shadow: 0 0 0 3px rgba(34,197,94,0.15);
   }
 
   /* 写真カルーセル */
@@ -342,18 +380,151 @@
   .btn-like   { color: var(--green); }
   .btn-like:hover   { background: #F0FDF4; }
 
-  /* 次バッチボタン */
-  .next-batch-wrap {
-    text-align: center; padding: 8px 0 20px;
+  /* ── SWIPE UI ── */
+  #screen-proposals { background: #ECEEFF; }
+  .swipe-topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 16px; background: white;
+    border-bottom: 1px solid var(--border); flex-shrink: 0;
   }
-  .btn-next-batch {
-    display: inline-block; padding: 12px 28px;
-    border: 1.5px solid var(--primary); border-radius: 24px;
-    background: white; color: var(--primary);
-    font-size: 14px; font-weight: 700; cursor: pointer;
-    font-family: inherit; transition: all 0.15s;
+  .swipe-back-btn {
+    font-size: 13px; color: var(--primary); background: none;
+    border: none; cursor: pointer; font-weight: 700; padding: 6px 0;
+    font-family: inherit;
   }
-  .btn-next-batch:hover { background: var(--primary-light); }
+  .swipe-like-pill {
+    display: flex; align-items: center; gap: 6px;
+    background: #FFF0F5; color: #D6336C;
+    font-size: 13px; font-weight: 700;
+    padding: 6px 12px; border-radius: 20px;
+  }
+  .swipe-view-btn {
+    font-size: 13px; color: white;
+    background: linear-gradient(135deg, #4F7FFF, #7B5EA7);
+    border: none; border-radius: 20px; padding: 7px 14px;
+    font-weight: 700; cursor: pointer; font-family: inherit;
+  }
+  .swipe-stack {
+    flex: 1; display: flex; align-items: center; justify-content: center;
+    padding: 16px 20px; position: relative; min-height: 0;
+  }
+  .swipe-card {
+    width: 100%; max-width: 360px; border-radius: var(--r-lg);
+    overflow: hidden; box-shadow: var(--shadow-lg);
+    background: white; position: relative;
+    transform-origin: bottom center;
+    user-select: none; -webkit-user-select: none; touch-action: none;
+  }
+  .swipe-card-photo {
+    height: 220px; position: relative; overflow: hidden;
+  }
+  .swipe-photo-bg {
+    position: absolute; inset: 0;
+    background-size: cover; background-position: center;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 64px;
+  }
+  .swipe-photo-grad {
+    position: absolute; bottom: 0; left: 0; right: 0; height: 80px;
+    background: linear-gradient(transparent, rgba(0,0,0,0.42));
+    pointer-events: none;
+  }
+  .swipe-match-badge {
+    position: absolute; top: 10px; right: 10px;
+    background: rgba(0,0,0,0.62); color: white;
+    font-size: 11px; font-weight: 700; padding: 4px 10px;
+    border-radius: 20px; backdrop-filter: blur(4px);
+  }
+  .swipe-event-badge {
+    position: absolute; top: 10px; left: 10px;
+    background: #EF4444; color: white;
+    font-size: 11px; font-weight: 700; padding: 4px 10px;
+    border-radius: 20px;
+  }
+  .swipe-card-info { padding: 14px 16px 16px; }
+  .swipe-cat { font-size: 12px; font-weight: 700; color: var(--primary); margin-bottom: 4px; }
+  .swipe-name { font-size: 17px; font-weight: 800; line-height: 1.3; margin-bottom: 8px; }
+  .swipe-reason {
+    font-size: 13px; color: #4B5563; line-height: 1.6;
+    margin-bottom: 10px;
+  }
+  .swipe-meta { display: flex; gap: 10px; flex-wrap: wrap; font-size: 12px; color: var(--sub); margin-bottom: 10px; }
+  .swipe-perks { display: flex; flex-wrap: wrap; gap: 6px; }
+  .swipe-perks span {
+    font-size: 11px; background: #EEF3FF; color: #4F7FFF;
+    padding: 3px 8px; border-radius: 20px; font-weight: 600;
+  }
+  /* Swipe overlays */
+  .swipe-ov {
+    position: absolute; z-index: 20; top: 26%;
+    font-size: 22px; font-weight: 900;
+    padding: 9px 16px; border-radius: 10px;
+    opacity: 0; pointer-events: none;
+    border: 4px solid; letter-spacing: 0.04em;
+    transition: opacity 0.05s;
+  }
+  #ov-like { left: 20px; color: #22C55E; border-color: #22C55E; transform: rotate(-15deg); }
+  #ov-nope { right: 20px; color: #EF4444; border-color: #EF4444; transform: rotate(15deg); }
+  /* Action buttons */
+  .swipe-btns {
+    display: flex; justify-content: center; align-items: flex-end;
+    gap: 6px; padding: 12px 12px 20px;
+    background: white; border-top: 1px solid var(--border); flex-shrink: 0;
+  }
+  .swipe-btn {
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    background: none; border: none; cursor: pointer; border-radius: 14px;
+    padding: 6px 10px; -webkit-tap-highlight-color: transparent;
+    transition: transform 0.1s;
+  }
+  .swipe-btn:active { transform: scale(0.88); }
+  .sb-icon {
+    width: 48px; height: 48px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; font-size: 22px;
+  }
+  .swipe-btn small { font-size: 10px; color: var(--sub); font-weight: 600; white-space: nowrap; }
+  .sb-skip .sb-icon { background: #F3F4F6; }
+  .sb-nope .sb-icon { background: #FEF2F2; }
+  .sb-like .sb-icon { background: #FFF0F5; width: 58px; height: 58px; font-size: 28px; }
+  .sb-book .sb-icon { background: linear-gradient(135deg,#4F7FFF,#7B5EA7); color: white; }
+  /* Liked modal */
+  .liked-modal {
+    position: fixed; inset: 0; z-index: 200;
+    background: rgba(0,0,0,0.48); display: none;
+    align-items: flex-end; justify-content: center;
+  }
+  .liked-modal.open { display: flex; }
+  .liked-inner {
+    background: white; border-radius: 24px 24px 0 0;
+    width: 100%; max-width: 430px; max-height: 80vh; overflow-y: auto;
+  }
+  .liked-hdr {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 20px; border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; background: white; z-index: 1;
+  }
+  .liked-hdr h3 { font-size: 16px; font-weight: 800; }
+  .liked-hdr button { font-size: 22px; background: none; border: none; cursor: pointer; line-height: 1; }
+  .liked-cnt {
+    display: inline-block; background: #EF4444; color: white;
+    font-size: 11px; font-weight: 700; padding: 2px 7px;
+    border-radius: 20px; margin-left: 6px;
+  }
+  .liked-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 20px; border-bottom: 1px solid var(--border);
+  }
+  .liked-thumb {
+    width: 52px; height: 52px; border-radius: 12px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px; background: var(--bg);
+    background-size: cover; background-position: center;
+  }
+  .liked-info { flex: 1; min-width: 0; }
+  .liked-item-name { font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .liked-item-meta { font-size: 11px; color: var(--sub); margin-top: 2px; }
+  .liked-book { background: var(--primary); color: white; border: none; border-radius: 10px; padding: 8px 12px; font-size: 12px; font-weight: 700; cursor: pointer; flex-shrink: 0; font-family: inherit; }
+  .liked-continue { display: block; width: calc(100% - 40px); margin: 14px 20px; padding: 12px; background: none; border: 1.5px solid var(--border); border-radius: 12px; font-size: 14px; font-weight: 600; color: var(--sub); cursor: pointer; font-family: inherit; }
 
   /* ── DRAWER ── */
   .drawer {
@@ -560,15 +731,15 @@
 
   /* ── NOTIFICATION BANNER ── */
   .notif-banner {
-    background: white;
+    background: linear-gradient(135deg, #EEF3FF, #F3EEFF);
     border-left: 4px solid var(--primary);
     border-radius: 10px;
     padding: 12px 14px;
     margin-bottom: 16px;
-    box-shadow: var(--shadow);
     display: flex;
     gap: 10px;
     align-items: flex-start;
+    cursor: default;
   }
   .notif-banner .icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
   .notif-banner .ntxt { font-size: 13px; line-height: 1.5; }
@@ -591,7 +762,7 @@
 
   /* ── ① 成長マップ ── */
   .growth-hero {
-    background: linear-gradient(135deg, #4F7FFF 0%, #7B5EA7 100%);
+    background: var(--primary);
     padding: 28px 24px 36px;
     color: white;
     text-align: center;
@@ -605,7 +776,8 @@
 
   .map-card {
     background: white; border-radius: var(--radius);
-    border: 1.5px solid var(--border); padding: 16px; margin-bottom: 14px;
+    border: 1px solid var(--border); padding: 16px; margin-bottom: 12px;
+    box-shadow: var(--shadow-sm);
   }
   .map-card-title {
     font-size: 12px; font-weight: 700; color: var(--sub);
@@ -736,10 +908,212 @@
     transition: all 0.15s;
   }
   .share-btn:hover { background: var(--primary); color: white; }
+
+  /* ── TYPE RESULT SCREEN ── */
+  @keyframes result-bounce {
+    0%   { transform: scale(0) rotate(-15deg); opacity: 0; }
+    55%  { transform: scale(1.25) rotate(6deg); opacity: 1; }
+    75%  { transform: scale(0.92) rotate(-3deg); }
+    100% { transform: scale(1) rotate(0deg); }
+  }
+  @keyframes result-slide-up {
+    from { transform: translateY(24px); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+  }
+  @keyframes confetti-fall {
+    0%   { transform: translateY(-10px) rotate(0deg);   opacity: 1; }
+    100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+  }
+  .result-hero {
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; padding: 48px 24px 36px;
+    text-align: center; position: relative; overflow: hidden; min-height: 300px;
+  }
+  .result-hero::before, .result-hero::after {
+    content: ''; position: absolute; border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+  }
+  .result-hero::before { width: 160px; height: 160px; top: -40px; right: -40px; }
+  .result-hero::after  { width: 100px; height: 100px; bottom: -20px; left: -20px; }
+  .result-emoji-big {
+    font-size: 88px; line-height: 1; margin-bottom: 18px;
+    animation: result-bounce 0.65s cubic-bezier(.36,.07,.19,.97) both;
+    display: block; position: relative; z-index: 1;
+  }
+  .result-hero-label {
+    font-size: 12px; font-weight: 800; letter-spacing: 0.12em;
+    color: rgba(255,255,255,0.8); margin-bottom: 6px; animation: result-slide-up 0.4s 0.3s both;
+  }
+  .result-hero-name {
+    font-size: 34px; font-weight: 900; color: white; margin-bottom: 12px;
+    text-shadow: 0 2px 12px rgba(0,0,0,0.15);
+    animation: result-slide-up 0.4s 0.45s both;
+  }
+  .result-hero-desc {
+    font-size: 13px; color: rgba(255,255,255,0.92); line-height: 1.8; max-width: 280px;
+    animation: result-slide-up 0.4s 0.6s both;
+  }
+  .result-powers-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 24px;
+  }
+  .result-power-card {
+    background: white; border-radius: 14px; padding: 14px 8px;
+    text-align: center; font-size: 12px; font-weight: 800;
+    color: var(--dark); line-height: 1.5;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+  }
+  .result-power-card .power-emoji { font-size: 28px; display: block; margin-bottom: 6px; }
+  .result-genre-chip {
+    padding: 8px 18px; border-radius: 20px; font-size: 13px; font-weight: 800;
+    color: white; display: inline-block;
+  }
+
+  /* ── BOTTOM NAV ── */
+  .bottom-nav {
+    position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 100%; max-width: 430px;
+    background: rgba(255,255,255,0.96);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-top: 1px solid var(--border);
+    display: flex; z-index: 50;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  .bottom-nav.hidden { display: none !important; }
+  .nav-tab {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; gap: 3px; padding: 10px 4px 8px;
+    background: none; border: none; cursor: pointer;
+    font-family: inherit; -webkit-tap-highlight-color: transparent;
+    position: relative;
+    transition: opacity 0.1s;
+  }
+  .nav-tab::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 50%; transform: translateX(-50%);
+    width: 0; height: 2px;
+    background: var(--primary);
+    border-radius: 0 0 2px 2px;
+    transition: width 0.2s ease;
+  }
+  .nav-tab.active::after { width: 28px; }
+  .nav-tab .nav-icon { font-size: 22px; line-height: 1; transition: transform 0.15s; }
+  .nav-tab.active .nav-icon { transform: translateY(-1px); }
+  .nav-tab .nav-label { font-size: 10px; color: var(--sub); font-weight: 600; white-space: nowrap; }
+  .nav-tab.active .nav-label { color: var(--primary); font-weight: 700; }
+  .nav-tab:not(.active) .nav-icon { filter: grayscale(1) opacity(0.45); }
+  /* extra bottom padding so content isn't hidden behind nav */
+  .screen { padding-bottom: 68px; }
+  .screen-no-nav { padding-bottom: 0; }
+
+  /* ── CHILD HUB ── */
+  .child-hub-hero {
+    min-height: 160px; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; padding: 24px 20px;
+    text-align: center; color: white;
+    background: linear-gradient(135deg, #FF6B9D, #FFB347);
+  }
+  .child-hub-hero.type-0 { background: linear-gradient(135deg,#FF6B9D,#FF8E53); }
+  .child-hub-hero.type-1 { background: linear-gradient(135deg,#4FACFE,#00F2FE); }
+  .child-hub-hero.type-2 { background: linear-gradient(135deg,#43E97B,#38F9D7); }
+  .child-hub-hero.type-3 { background: linear-gradient(135deg,#A855F7,#EC4899); }
+  .child-hub-hero.type-4 { background: linear-gradient(135deg,#F97316,#FBBF24); }
+  .child-hub-hero.type-5 { background: linear-gradient(135deg,#F59E0B,#FCD34D); }
+  .child-hub-hero.type-6 { background: linear-gradient(135deg,#10B981,#34D399); }
+  .child-hub-hero.type-7 { background: linear-gradient(135deg,#6366F1,#8B5CF6); }
+  .quiz-opt-btn {
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    padding: 16px 8px; background: white; border: 2px solid var(--border);
+    border-radius: 16px; cursor: pointer; font-family: inherit;
+    transition: all 0.15s; -webkit-tap-highlight-color: transparent;
+    font-size: 13px; font-weight: 700; color: var(--dark);
+    text-align: center; white-space: pre-wrap; line-height: 1.4;
+  }
+  .quiz-opt-btn:active { transform: scale(0.94); border-color: var(--primary); background: var(--primary-light); }
+  .quiz-opt-btn .opt-emoji { font-size: 36px; line-height: 1; }
+
+  /* ── GROWTH MAP PREMIUM ── */
+  .talent-report-card {
+    background: linear-gradient(135deg,#FFFBEB,#FFF3E0);
+    border: 1.5px solid #FCD34D; border-radius: 16px; padding: 18px; margin-bottom: 16px;
+  }
+  .tr-ai-badge {
+    background: #F59E0B; color: white; font-size: 10px; font-weight: 800;
+    padding: 3px 10px; border-radius: 20px; letter-spacing: 0.05em;
+  }
+  .tr-title { font-size: 16px; font-weight: 900; color: #78350F; margin: 8px 0 10px; }
+  .tr-body  { font-size: 13px; color: #451A03; line-height: 1.85; margin-bottom: 12px; }
+  .tr-hl {
+    background: #FEF3C7; border: 1px solid #FCD34D; color: #92400E;
+    font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 12px; display: inline-block;
+  }
+  .memory-entry {
+    display: flex; gap: 12px; padding: 13px 0; border-bottom: 1px solid var(--border);
+    align-items: flex-start;
+  }
+  .memory-entry:last-child { border-bottom: none; }
+  .memory-entry-icon {
+    width: 48px; height: 48px; border-radius: 12px; background: var(--bg);
+    font-size: 24px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .memory-entry-name { font-size: 14px; font-weight: 800; color: var(--dark); margin-bottom: 3px; }
+  .memory-entry-meta { font-size: 11px; color: var(--sub); margin-bottom: 5px; }
+  .memory-entry-memo { font-size: 12px; color: #4B5563; line-height: 1.65; }
+  .memory-stars { color: #F59E0B; font-size: 13px; margin-top: 4px; letter-spacing: 1px; }
+  .gph-stats-bar {
+    display: flex; background: rgba(255,255,255,0.16); border-radius: 14px; padding: 14px 0;
+  }
+  .gph-stat { flex: 1; text-align: center; }
+  .gph-stat + .gph-stat { border-left: 1px solid rgba(255,255,255,0.22); }
+  .gph-stat-num { font-size: 26px; font-weight: 900; line-height: 1; color: white; }
+  .gph-stat-lbl { font-size: 11px; color: rgba(255,255,255,0.8); margin-top: 2px; }
 </style>
 </head>
 <body>
 <div class="app">
+
+  <!-- ════════════════════════════════
+       SCREEN 0: 会員登録（初回のみ）
+  ════════════════════════════════ -->
+  <div id="screen-register" class="screen" style="background:linear-gradient(160deg,#4F7FFF 0%,#7B5EA7 100%);justify-content:space-between;">
+    <div style="padding:48px 28px 0;text-align:center;">
+      <div style="font-size:52px;margin-bottom:12px;">👶</div>
+      <h1 style="color:white;font-size:22px;font-weight:900;margin-bottom:8px;">はじめまして！</h1>
+      <p style="color:rgba(255,255,255,0.85);font-size:13px;line-height:1.7;">お子さまの情報を教えてください。<br>AIがぴったりの体験を提案します。</p>
+    </div>
+    <div style="background:white;border-radius:28px 28px 0 0;padding:28px 24px 40px;flex:1;margin-top:28px;overflow-y:auto;">
+      <div style="font-size:13px;font-weight:800;color:#4F7FFF;margin-bottom:20px;text-align:center;">📝 かんたん登録（30秒）</div>
+
+      <div class="field" style="margin-bottom:16px;">
+        <label style="font-size:12px;font-weight:700;color:#666;margin-bottom:6px;display:block;">お子さまのニックネーム</label>
+        <input type="text" id="reg-child-name" placeholder="例：たろう" style="width:100%;padding:12px 14px;border:1.5px solid #E2E8F0;border-radius:12px;font-size:15px;font-family:inherit;box-sizing:border-box;">
+      </div>
+
+      <div class="field" style="margin-bottom:16px;">
+        <label style="font-size:12px;font-weight:700;color:#666;margin-bottom:6px;display:block;">年齢</label>
+        <select id="reg-child-age" style="width:100%;padding:12px 14px;border:1.5px solid #E2E8F0;border-radius:12px;font-size:15px;font-family:inherit;background:white;box-sizing:border-box;">
+          <option value="">選択してください</option>
+          <option>3歳</option><option>4歳</option><option>5歳</option>
+          <option>6歳（年長）</option><option>小1</option><option>小2</option>
+          <option>小3</option><option>小4</option><option>小5</option><option>小6</option>
+        </select>
+      </div>
+
+      <div class="field" style="margin-bottom:16px;">
+        <label style="font-size:12px;font-weight:700;color:#666;margin-bottom:6px;display:block;">保護者のメールアドレス</label>
+        <input type="email" id="reg-email" placeholder="example@email.com" style="width:100%;padding:12px 14px;border:1.5px solid #E2E8F0;border-radius:12px;font-size:15px;font-family:inherit;box-sizing:border-box;">
+      </div>
+
+      <div class="field" style="margin-bottom:28px;">
+        <label style="font-size:12px;font-weight:700;color:#666;margin-bottom:6px;display:block;">電話番号</label>
+        <input type="tel" id="reg-phone" placeholder="090-0000-0000" style="width:100%;padding:12px 14px;border:1.5px solid #E2E8F0;border-radius:12px;font-size:15px;font-family:inherit;box-sizing:border-box;">
+      </div>
+
+      <button onclick="saveRegistration()" style="width:100%;padding:15px;background:linear-gradient(90deg,#4F7FFF,#7B5EA7);color:white;border:none;border-radius:14px;font-size:16px;font-weight:900;cursor:pointer;font-family:inherit;">はじめる →</button>
+      <p style="text-align:center;font-size:11px;color:#999;margin-top:14px;">個人情報は施設予約・体験提案にのみ使用します。</p>
+    </div>
+  </div>
 
   <!-- ════════════════════════════════
        SCREEN 1: ONBOARDING / HERO
@@ -751,40 +1125,32 @@
       <p>調べる・予約するの手間はゼロ。<br>AIが子どもの個性に合った体験を自動提案。</p>
     </div>
     <div class="content">
-      <div class="notif-banner">
-        <span class="icon">✨</span>
-        <div class="ntxt">
-          <strong>初回は無料でお試し</strong>
-          プロファイル登録するだけで、今週末のおすすめ体験プランをAIがご提案します。
-        </div>
-      </div>
-
       <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:28px;">
-        <div style="display:flex;gap:12px;align-items:center;padding:14px;background:white;border-radius:12px;box-shadow:var(--shadow);">
-          <span style="font-size:28px;">🔍</span>
+        <div style="display:flex;gap:12px;align-items:center;padding:14px;background:white;border-radius:var(--r);box-shadow:var(--shadow-sm);border:1px solid var(--border);">
+          <span style="font-size:26px;">🔍</span>
           <div>
-            <div style="font-weight:700;font-size:14px;margin-bottom:2px;">AIが代わりに調べる</div>
+            <div style="font-weight:700;font-size:14px;margin-bottom:2px;color:var(--text);">AIが代わりに調べる</div>
             <div style="font-size:12px;color:var(--sub);">数百件の体験施設から厳選して提案</div>
           </div>
         </div>
-        <div style="display:flex;gap:12px;align-items:center;padding:14px;background:white;border-radius:12px;box-shadow:var(--shadow);">
-          <span style="font-size:28px;">📝</span>
+        <div style="display:flex;gap:12px;align-items:center;padding:14px;background:white;border-radius:var(--r);box-shadow:var(--shadow-sm);border:1px solid var(--border);">
+          <span style="font-size:26px;">📝</span>
           <div>
-            <div style="font-weight:700;font-size:14px;margin-bottom:2px;">予約フォームを自動入力</div>
+            <div style="font-weight:700;font-size:14px;margin-bottom:2px;color:var(--text);">予約フォームを自動入力</div>
             <div style="font-size:12px;color:var(--sub);">お名前・連絡先などはAIが代行入力</div>
           </div>
         </div>
-        <div style="display:flex;gap:12px;align-items:center;padding:14px;background:white;border-radius:12px;box-shadow:var(--shadow);">
-          <span style="font-size:28px;">🔐</span>
+        <div style="display:flex;gap:12px;align-items:center;padding:14px;background:white;border-radius:var(--r);box-shadow:var(--shadow-sm);border:1px solid var(--border);">
+          <span style="font-size:26px;">🔐</span>
           <div>
-            <div style="font-weight:700;font-size:14px;margin-bottom:2px;">決済だけあなたが操作</div>
+            <div style="font-weight:700;font-size:14px;margin-bottom:2px;color:var(--text);">決済だけあなたが操作</div>
             <div style="font-size:12px;color:var(--sub);">セキュリティコード入力のみ（約15秒）</div>
           </div>
         </div>
       </div>
     </div>
     <div class="sticky-footer">
-      <button class="btn btn-primary" onclick="goTo('screen-profile')">はじめる（無料）</button>
+      <button class="btn btn-primary" onclick="startSearch()">体験を探す →</button>
       <button class="btn btn-ghost" onclick="showGrowthMap('screen-welcome')">🗺️ 成長マップを見る</button>
     </div>
   </div>
@@ -800,78 +1166,54 @@
     <div class="progress-bar"><div class="fill" style="width:33%"></div></div>
 
     <div class="content" style="overflow-y:auto;">
-      <div class="section-title">お子さまのプロフィール</div>
-      <div class="section-sub">入力内容をもとにAIがパーソナライズされた体験を提案します。</div>
+      <div class="section-title">今日はどんな体験？</div>
 
+      <!-- 子ども情報バナー -->
+      <div id="profile-child-banner" style="display:flex;align-items:center;gap:10px;background:white;border-radius:12px;padding:12px 14px;margin-bottom:20px;box-shadow:var(--shadow);">
+        <span style="font-size:24px;" id="profile-banner-emoji">👶</span>
+        <div style="flex:1;">
+          <div style="font-size:12px;font-weight:800;color:#333;" id="profile-banner-name">お子さまの情報を参照中</div>
+          <div style="font-size:11px;color:var(--sub);" id="profile-banner-type">設定から子ども情報を詳しく入力するとAIの精度が上がります</div>
+        </div>
+        <button onclick="goTo('screen-child-profile')" style="font-size:11px;font-weight:700;color:#4F7FFF;background:none;border:1.5px solid #4F7FFF;border-radius:8px;padding:5px 10px;cursor:pointer;font-family:inherit;white-space:nowrap;">編集 →</button>
+      </div>
+
+      <!-- 今日の気分（必須） -->
+      <div class="profile-section-label">✨ 今日の気分</div>
       <div class="form-section">
-        <h3>基本情報</h3>
         <div class="field">
-          <label>お子さまのお名前（ニックネームOK）</label>
-          <input type="text" placeholder="例：たろう" id="child-name">
+          <div class="chip-group single-select" id="mood-chips">
+            <span class="chip" onclick="selectChip(this,'mood-chips')">🔥 アクティブに</span>
+            <span class="chip" onclick="selectChip(this,'mood-chips')">🎨 クリエイティブに</span>
+            <span class="chip" onclick="selectChip(this,'mood-chips')">📖 じっくり学びたい</span>
+            <span class="chip" onclick="selectChip(this,'mood-chips')">🌸 ゆったり親子時間</span>
+          </div>
         </div>
+      </div>
+
+      <!-- 予算 -->
+      <div class="profile-section-label">💴 予算感（子ども1人あたり）</div>
+      <div class="form-section">
         <div class="field">
-          <label>年齢</label>
-          <select id="child-age">
-            <option value="">選択してください</option>
-            <option>3歳</option><option>4歳</option><option>5歳</option>
-            <option>6歳（年長）</option><option>小1</option><option>小2</option>
-            <option>小3</option><option>小4</option><option>小5</option><option>小6</option>
-          </select>
+          <div class="chip-group single-select" id="budget-chips">
+            <span class="chip" onclick="selectChip(this,'budget-chips')">〜3,000円</span>
+            <span class="chip" onclick="selectChip(this,'budget-chips')">〜5,000円</span>
+            <span class="chip" onclick="selectChip(this,'budget-chips')">〜10,000円</span>
+            <span class="chip" onclick="selectChip(this,'budget-chips')">金額は気にしない</span>
+          </div>
         </div>
       </div>
 
+      <!-- 希望日 -->
+      <div class="profile-section-label">📅 希望日</div>
       <div class="form-section">
-        <h3>性格・特徴</h3>
-        <div class="chip-group" id="personality-chips">
-          <span class="chip" onclick="toggleChip(this)">🎨 もの作りが好き</span>
-          <span class="chip" onclick="toggleChip(this)">🌿 外遊び・自然派</span>
-          <span class="chip" onclick="toggleChip(this)">📚 読書・勉強好き</span>
-          <span class="chip" onclick="toggleChip(this)">🎵 音楽・リズム感</span>
-          <span class="chip" onclick="toggleChip(this)">⚽ スポーツ好き</span>
-          <span class="chip" onclick="toggleChip(this)">🔬 理科・実験が好き</span>
-          <span class="chip" onclick="toggleChip(this)">🤝 人見知りしない</span>
-          <span class="chip" onclick="toggleChip(this)">🐱 動物が大好き</span>
-        </div>
-      </div>
-
-      <div class="form-section">
-        <h3>体験させたいジャンル</h3>
-        <div class="chip-group" id="genre-chips">
-          <span class="chip" onclick="toggleChip(this)">🎭 アート・工作</span>
-          <span class="chip" onclick="toggleChip(this)">🌱 農業・自然体験</span>
-          <span class="chip" onclick="toggleChip(this)">🔭 科学・プログラミング</span>
-          <span class="chip" onclick="toggleChip(this)">🎪 音楽・演劇</span>
-          <span class="chip" onclick="toggleChip(this)">🏄 スポーツ体験</span>
-          <span class="chip" onclick="toggleChip(this)">🍳 料理・食育</span>
-        </div>
-      </div>
-
-      <div class="form-section">
-        <h3>教育方針・大切にしていること</h3>
-        <div class="chip-group" id="policy-chips">
-          <span class="chip" onclick="toggleChip(this)">🧠 自分で考える力</span>
-          <span class="chip" onclick="toggleChip(this)">🤝 友達と協力する力</span>
-          <span class="chip" onclick="toggleChip(this)">🎯 やり抜く力・集中力</span>
-          <span class="chip" onclick="toggleChip(this)">🌍 多様な体験を積む</span>
-          <span class="chip" onclick="toggleChip(this)">🏆 チャレンジ精神</span>
-          <span class="chip" onclick="toggleChip(this)">💬 コミュニケーション力</span>
-          <span class="chip" onclick="toggleChip(this)">🎨 創造性・表現力</span>
-          <span class="chip" onclick="toggleChip(this)">📚 知的好奇心を育てる</span>
-          <span class="chip" onclick="toggleChip(this)">💪 体力・健康づくり</span>
-          <span class="chip" onclick="toggleChip(this)">🌱 自然・環境への関心</span>
-        </div>
-      </div>
-
-      <div class="form-section">
-        <h3>活動エリア</h3>
         <div class="field">
-          <select>
-            <option>東京都（23区内）</option>
-            <option>東京都（多摩地区）</option>
-            <option>神奈川県</option>
-            <option>埼玉県</option>
-            <option>千葉県</option>
-          </select>
+          <div class="chip-group" id="date-chips" style="margin-bottom:8px;">
+            <span class="chip" onclick="setDateChip(this,'this-weekend')">今週末</span>
+            <span class="chip" onclick="setDateChip(this,'next-weekend')">来週末</span>
+            <span class="chip" onclick="setDateChip(this,'custom')">📅 日付を選ぶ</span>
+          </div>
+          <input type="date" id="preferred-date" style="display:none;width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;font-family:inherit;">
         </div>
       </div>
 
@@ -915,37 +1257,53 @@
   </div>
 
   <!-- ════════════════════════════════
-       SCREEN 4: AI PROPOSALS
+       SCREEN 4: SWIPE PROPOSALS
   ════════════════════════════════ -->
   <div id="screen-proposals" class="screen">
-    <div class="header">
-      <div class="logo">こども<span>AI</span>コンシェルジュ</div>
-      <div class="step-badge">STEP 2/3</div>
-    </div>
-    <div class="progress-bar"><div class="fill" style="width:66%"></div></div>
-
-    <div class="content" style="overflow-y:auto;">
-      <div class="section-title">今週末のおすすめ体験</div>
-      <div class="section-sub" id="proposal-sub">AIがプロフィールをもとに厳選した3プランです。気に入ったものをタップしてください。</div>
-
-      <!-- 動的カード挿入エリア -->
-      <div id="proposal-container"></div>
-
-      <!-- 次バッチ -->
-      <div class="next-batch-wrap">
-        <button class="btn-next-batch" id="next-batch-btn" onclick="loadNextBatch()">
-          次の3件を見る →
-        </button>
+    <!-- トップバー -->
+    <div class="swipe-topbar">
+      <button class="swipe-back-btn" onclick="goTo('screen-profile')">← 絞り込む</button>
+      <div class="swipe-like-pill" id="swipe-like-pill" style="display:none;">
+        ❤️ <span id="swipe-like-count">0</span>件 キープ中
       </div>
-
-      <div style="height:80px;"></div>
-    </div>
-
-    <div class="sticky-footer">
-      <button class="btn btn-primary" id="confirm-btn" onclick="confirmPlan()" disabled style="opacity:0.45;">
-        このプランで予約へ進む →
+      <button class="swipe-view-btn" id="swipe-view-btn" style="display:none;" onclick="showLikedList()">
+        選ぶ →
       </button>
     </div>
+
+    <!-- スワイプエリア -->
+    <div class="swipe-stack" id="swipe-stack">
+      <div class="swipe-card" id="swipe-card">
+        <!-- JS で描画 -->
+      </div>
+      <div class="swipe-ov" id="ov-like">❤️ 良さそう</div>
+      <div class="swipe-ov" id="ov-nope">パス</div>
+    </div>
+
+    <!-- アクションボタン -->
+    <div class="swipe-btns">
+      <button class="swipe-btn sb-skip" onclick="doSwipe('skip')">
+        <div class="sb-icon">✕</div>
+        <small>興味ない</small>
+      </button>
+      <button class="swipe-btn sb-nope" onclick="doSwipe('nope')">
+        <div class="sb-icon">⏭</div>
+        <small>今回はパス</small>
+      </button>
+      <button class="swipe-btn sb-like" onclick="doSwipe('like')">
+        <div class="sb-icon">❤️</div>
+        <small>良さそう！</small>
+      </button>
+      <button class="swipe-btn sb-book" onclick="doSwipe('book')">
+        <div class="sb-icon">🎯</div>
+        <small>予約する</small>
+      </button>
+    </div>
+  </div>
+
+  <!-- ライクリストモーダル -->
+  <div class="liked-modal" id="liked-modal">
+    <div class="liked-inner" id="liked-inner"><!-- JS で描画 --></div>
   </div>
 
   <!-- ════════════════════════════════
@@ -1183,31 +1541,79 @@
        SCREEN 9: 成長マップ
   ════════════════════════════════ -->
   <div id="screen-growth-map" class="screen">
-    <div class="header">
-      <button onclick="goTo(mapReturnScreen)" style="background:none;border:none;font-size:22px;cursor:pointer;padding:0;color:var(--text);line-height:1;">←</button>
-      <div class="logo" style="font-size:17px;margin-left:10px;">こども<span>AI</span>コンシェルジュ</div>
+    <!-- ヘッダー (グラデ背景) -->
+    <div class="header" style="background:linear-gradient(135deg,#4F7FFF,#7B5EA7);color:white;">
+      <div class="logo" style="color:white;font-size:16px;">成長記録</div>
+      <span style="background:rgba(255,255,255,0.22);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:800;color:white;letter-spacing:0.05em;">✨ プレミアム</span>
     </div>
 
     <div style="flex:1;overflow-y:auto;">
-      <!-- ヒーロー -->
-      <div class="growth-hero">
-        <span class="g-avatar" id="growth-avatar">🌱</span>
-        <h2 id="growth-child-name">お子さまの成長マップ</h2>
-        <div class="level-pill" id="growth-total-level">🗺️ 未探険 • 0回の体験</div>
+      <!-- プレミアムヒーロー -->
+      <div style="background:linear-gradient(135deg,#4F7FFF,#7B5EA7);padding:16px 20px 24px;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:18px;">
+          <div>
+            <div id="growth-hero-name" style="font-size:20px;font-weight:900;color:white;margin-bottom:4px;">さくら の成長記録</div>
+            <div id="growth-hero-type" style="font-size:13px;color:rgba(255,255,255,0.85);font-weight:600;">🎨 アーティストタイプ</div>
+          </div>
+          <div id="growth-hero-level" style="background:rgba(255,255,255,0.22);border-radius:20px;padding:6px 14px;font-size:13px;font-weight:800;color:white;white-space:nowrap;">🌿 探索中</div>
+        </div>
+        <div class="gph-stats-bar">
+          <div class="gph-stat"><div class="gph-stat-num" id="gph-exp-count">4</div><div class="gph-stat-lbl">体験回数</div></div>
+          <div class="gph-stat"><div class="gph-stat-num" id="gph-genre-count">4</div><div class="gph-stat-lbl">ジャンル</div></div>
+          <div class="gph-stat"><div class="gph-stat-num" id="gph-badge-count">4</div><div class="gph-stat-lbl">バッジ</div></div>
+        </div>
       </div>
 
-      <div class="content">
+      <div class="content" style="padding-top:16px;">
 
-        <!-- ① 興味レーダーチャート -->
+        <!-- ✨ AI才能レポート -->
+        <div class="talent-report-card">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+            <span class="tr-ai-badge">✨ AI才能レポート</span>
+            <span id="tr-month" style="font-size:11px;color:#92400E;font-weight:600;"></span>
+          </div>
+          <div class="tr-title">今月の<span id="tr-child-name">さくら</span></div>
+
+          <!-- 発見された才能 -->
+          <div style="background:rgba(245,158,11,0.12);border-left:3px solid #F59E0B;border-radius:0 10px 10px 0;padding:10px 12px;margin-bottom:10px;">
+            <div style="font-size:10px;font-weight:800;color:#92400E;letter-spacing:0.08em;margin-bottom:4px;">🔍 発見された才能</div>
+            <div id="tr-talent" style="font-size:13px;color:#451A03;font-weight:700;line-height:1.6;"></div>
+          </div>
+
+          <!-- 今月のハイライト -->
+          <div style="font-size:10px;font-weight:800;color:#92400E;letter-spacing:0.08em;margin-bottom:6px;">📊 今月のハイライト</div>
+          <div id="tr-highlights" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;"></div>
+
+          <!-- 来月のおすすめ -->
+          <div style="background:rgba(255,255,255,0.7);border-radius:10px;padding:10px;border:1px solid #FCD34D;">
+            <div style="font-size:10px;font-weight:800;color:#92400E;letter-spacing:0.08em;margin-bottom:4px;">💡 来月のおすすめ</div>
+            <div id="tr-next" style="font-size:12px;color:#451A03;line-height:1.7;"></div>
+          </div>
+        </div>
+
+        <!-- 才能ランキング -->
+        <div id="talent-ranking" style="display:none;margin-bottom:16px;">
+          <div style="font-size:13px;font-weight:800;color:var(--dark);margin-bottom:10px;letter-spacing:0.04em;">🏅 才能ランキング</div>
+          <div id="talent-ranking-items"></div>
+        </div>
+
+        <!-- ① 才能マップ -->
         <div class="map-card">
-          <div class="map-card-title">① 🕸️ 興味レーダーチャート</div>
+          <div class="map-card-title">① 🕸️ 才能マップ</div>
           <div id="radar-chart" style="min-height:120px;"></div>
           <div id="growth-cat-bars" style="margin-top:14px;"></div>
         </div>
 
-        <!-- ② 今月のチャレンジ（疑似実装） -->
+        <!-- ② 思い出アルバム (デジタルアルバム) -->
         <div class="map-card">
-          <div class="map-card-title">② 🏆 今月のチャレンジ</div>
+          <div class="map-card-title">② 📸 思い出アルバム</div>
+          <div id="memory-album"></div>
+          <button onclick="showAddMemoryModal()" class="btn btn-ghost" style="width:100%;margin-top:12px;font-size:13px;">＋ 思い出を追加する</button>
+        </div>
+
+        <!-- ③ チャレンジ -->
+        <div class="map-card">
+          <div class="map-card-title">③ 🏆 今月のチャレンジ</div>
           <div class="challenge-card green">
             <h4>🌿 この夏チャレンジ：自然体験を2回やろう！</h4>
             <p>外で体を使った体験はお子さまの成長に抜群の効果があります。</p>
@@ -1215,44 +1621,17 @@
             <div class="ch-label" id="ch-nature-label">0 / 2 回達成</div>
           </div>
           <div class="challenge-card blue">
-            <h4>🎨 アート初挑戦：はじめてのアート体験！</h4>
-            <p>未経験ジャンルに挑戦すると新しい才能が見つかるかも。</p>
+            <h4>🎨 アート：もう1回挑戦してみよう！</h4>
+            <p>続けることで「本物の才能」が開花します。</p>
             <div class="ch-track"><div class="ch-fill" id="ch-art-bar" style="width:0%"></div></div>
-            <div class="ch-label" id="ch-art-label">0 / 1 回達成</div>
+            <div class="ch-label" id="ch-art-label">0 / 2 回達成</div>
           </div>
         </div>
 
-        <!-- ③ 獲得バッジ（疑似実装） -->
+        <!-- ④ 獲得バッジ -->
         <div class="map-card">
-          <div class="map-card-title">③ 🎖️ 獲得バッジ</div>
+          <div class="map-card-title">④ 🎖️ 獲得バッジ</div>
           <div class="badge-grid" id="badge-grid"></div>
-        </div>
-
-        <!-- 体験ログ -->
-        <div class="map-card">
-          <div class="map-card-title">📔 体験ログ</div>
-          <div id="growth-log">
-            <div style="text-align:center;padding:24px;color:var(--sub);font-size:14px;">
-              体験を予約するとここに記録されます 🗺️
-            </div>
-          </div>
-        </div>
-
-        <!-- ④ 成長レポートをシェア（疑似実装） -->
-        <div class="map-card">
-          <div class="map-card-title">④ 📤 成長レポートをシェア</div>
-          <div style="background:var(--bg);border-radius:10px;padding:14px;margin-bottom:12px;font-size:13px;color:var(--sub);line-height:1.75;">
-            <div style="font-weight:700;color:var(--text);margin-bottom:4px;">📊 月次成長カード</div>
-            「今月のお子さま：アート2回・科学1回。<br>
-            発見した才能：細かい作業の集中力が抜群！」<br>
-            <span style="color:var(--primary);font-size:12px;">→ 画像として保存・SNSシェアできます（準備中）</span>
-          </div>
-          <button class="share-btn" onclick="showShareToast()">
-            🔗 成長カードを作成してシェアする
-          </button>
-          <button class="btn btn-ghost" onclick="goTo('screen-profile')" style="margin-top:10px;">
-            ← 新しい体験を探す
-          </button>
         </div>
 
         <div style="height:20px;"></div>
@@ -1285,7 +1664,247 @@
     </div>
   </div>
 
+  <!-- ════════════════════════════════
+       SCREEN: 子どもスペース (Tab 2)
+  ════════════════════════════════ -->
+  <div id="screen-child" class="screen">
+    <div id="child-hub-hero" class="child-hub-hero">
+      <!-- rendered by JS: showChildHub() -->
+    </div>
+    <div class="content" style="padding-top:16px;">
+      <div id="child-hub-body">
+        <!-- rendered by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════
+       SCREEN: タイプ診断クイズ
+  ════════════════════════════════ -->
+  <div id="screen-diagnosis" class="screen">
+    <div class="header">
+      <button class="back-btn" onclick="goTo('screen-child')" style="background:none;border:none;font-size:20px;cursor:pointer;padding:4px 8px;">←</button>
+      <div class="logo" style="font-size:14px;">タイプ診断</div>
+      <div id="quiz-step-badge" class="step-badge">1/6</div>
+    </div>
+    <div class="progress-bar"><div class="fill" id="quiz-progress-bar" style="width:16%;"></div></div>
+    <div class="content" style="display:flex;flex-direction:column;align-items:center;padding:24px 20px;">
+      <div id="quiz-question" style="font-size:20px;font-weight:800;text-align:center;line-height:1.5;margin-bottom:28px;color:var(--dark);white-space:pre-wrap;"></div>
+      <div id="quiz-options" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;width:100%;max-width:340px;"></div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════
+       SCREEN: タイプ診断結果
+  ════════════════════════════════ -->
+  <div id="screen-type-result" class="screen" style="background:var(--bg);overflow-y:auto;">
+    <!-- ヒーロー：タイプカラーで全面グラデ -->
+    <div id="result-hero" class="result-hero">
+      <span id="result-emoji" class="result-emoji-big"></span>
+      <div class="result-hero-label">きみのタイプは…</div>
+      <div id="result-name" class="result-hero-name"></div>
+      <div id="result-desc" class="result-hero-desc"></div>
+    </div>
+
+    <div class="content" style="padding-top:20px;">
+      <!-- 超能力バッジ -->
+      <div style="font-size:13px;font-weight:800;color:var(--dark);margin-bottom:12px;letter-spacing:0.04em;">⚡ きみの すごいところ</div>
+      <div id="result-powers" class="result-powers-grid" style="margin-bottom:28px;"></div>
+
+      <!-- おすすめジャンル -->
+      <div style="font-size:13px;font-weight:800;color:var(--dark);margin-bottom:12px;letter-spacing:0.04em;">🌟 ぴったりの たいけん</div>
+      <div id="result-genres" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:32px;"></div>
+
+      <button class="btn btn-primary" onclick="onTypeDiagnosisDone()" style="width:100%;font-size:15px;padding:16px;">体験をさがしてみよう！✨</button>
+      <button class="btn btn-ghost" onclick="startQuiz()" style="margin-top:8px;width:100%;">もう一度やり直す</button>
+      <div style="height:24px;"></div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════
+       SCREEN: 設定 (Tab 4)
+  ════════════════════════════════ -->
+  <div id="screen-settings" class="screen" style="background:var(--bg);">
+    <div class="header">
+      <div class="logo">こども<span>AI</span>コンシェルジュ</div>
+      <div style="font-size:12px;color:var(--sub);font-weight:600;">設定</div>
+    </div>
+    <div class="content" style="overflow-y:auto;">
+
+      <!-- プレミアムプラン -->
+      <div style="background:linear-gradient(135deg,#4F7FFF,#7B5EA7);border-radius:16px;padding:20px;color:white;margin-bottom:20px;">
+        <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;opacity:0.85;margin-bottom:6px;">現在のプラン</div>
+        <div style="font-size:20px;font-weight:900;margin-bottom:4px;">✨ 無料プラン</div>
+        <div style="font-size:12px;opacity:0.85;margin-bottom:16px;">施設予約まで無料でご利用いただけます</div>
+        <div style="background:rgba(255,255,255,0.2);border-radius:10px;padding:12px;margin-bottom:12px;">
+          <div style="font-size:13px;font-weight:700;margin-bottom:8px;">🌱 ファミリープランでできること</div>
+          <div style="font-size:12px;line-height:2;opacity:0.95;">✅ 成長マップ（無制限記録）<br>✅ 月次才能レポート<br>✅ 習い事ログ<br>✅ 兄弟比較・ポートフォリオ</div>
+        </div>
+        <button onclick="showPremiumModal()" style="width:100%;padding:12px;background:white;color:#4F7FFF;border:none;border-radius:10px;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;">¥980/月 で始める →</button>
+      </div>
+
+      <!-- アカウント情報 -->
+      <div class="profile-section-label">📱 アカウント情報</div>
+      <div class="form-section">
+        <div style="background:white;border-radius:12px;padding:16px;box-shadow:var(--shadow);">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+            <span style="font-size:20px;">📧</span>
+            <div>
+              <div style="font-size:11px;color:var(--sub);font-weight:600;">メールアドレス</div>
+              <div style="font-size:13px;font-weight:700;" id="settings-email-disp">—</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span style="font-size:20px;">📞</span>
+            <div>
+              <div style="font-size:11px;color:var(--sub);font-weight:600;">電話番号</div>
+              <div style="font-size:13px;font-weight:700;" id="settings-phone-disp">—</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 子ども情報 -->
+      <div class="profile-section-label">👶 お子さまの情報</div>
+      <div class="form-section">
+        <div style="background:white;border-radius:12px;padding:16px;box-shadow:var(--shadow);margin-bottom:10px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+            <div>
+              <div style="font-size:15px;font-weight:800;" id="settings-child-summary">—</div>
+              <div style="font-size:12px;color:var(--sub);" id="settings-child-type-disp">診断タイプ：未診断</div>
+            </div>
+            <span style="font-size:28px;" id="settings-child-emoji">👶</span>
+          </div>
+          <div style="font-size:11px;color:var(--sub);" id="settings-child-traits-disp">性格・特徴：未設定</div>
+        </div>
+        <button onclick="goTo('screen-child-profile')" style="width:100%;padding:12px;background:white;border:1.5px solid #4F7FFF;border-radius:10px;color:#4F7FFF;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;">✏️ 子ども情報を編集する</button>
+      </div>
+
+      <div class="profile-section-label">🛠️ デモ設定</div>
+      <div class="form-section">
+        <button onclick="resetDemo()" style="width:100%;padding:12px;background:none;border:1.5px solid #EF4444;border-radius:10px;color:#EF4444;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">デモデータをリセット</button>
+      </div>
+
+      <div style="height:80px;"></div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════
+       SCREEN: 子ども情報入力（親目線）
+  ════════════════════════════════ -->
+  <div id="screen-child-profile" class="screen" style="background:var(--bg);">
+    <div class="header">
+      <button onclick="goTo('screen-settings')" style="background:none;border:none;font-size:20px;cursor:pointer;padding:4px 8px;">←</button>
+      <div style="font-weight:800;font-size:15px;">お子さまの情報</div>
+      <div style="width:40px;"></div>
+    </div>
+    <div class="content" style="overflow-y:auto;">
+      <div class="section-sub" style="margin-bottom:20px;">AIが最適な体験を提案するために使います。後からいつでも変更できます。</div>
+
+      <div class="profile-section-label">👶 基本情報</div>
+      <div class="form-section">
+        <div class="field">
+          <label>お名前（ニックネームOK）</label>
+          <input type="text" id="cp-child-name" placeholder="例：たろう">
+        </div>
+        <div class="field">
+          <label>年齢</label>
+          <select id="cp-child-age">
+            <option value="">選択してください</option>
+            <option>3歳</option><option>4歳</option><option>5歳</option>
+            <option>6歳（年長）</option><option>小1</option><option>小2</option>
+            <option>小3</option><option>小4</option><option>小5</option><option>小6</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="profile-section-label">🧒 性格・特徴（複数OK）</div>
+      <div class="form-section">
+        <div class="chip-group" id="cp-traits-chips">
+          <span class="chip" onclick="toggleChip(this)">🎨 もの作りが好き</span>
+          <span class="chip" onclick="toggleChip(this)">🌿 外遊び・自然派</span>
+          <span class="chip" onclick="toggleChip(this)">📚 読書・勉強好き</span>
+          <span class="chip" onclick="toggleChip(this)">🎵 音楽・リズム感</span>
+          <span class="chip" onclick="toggleChip(this)">⚽ スポーツ好き</span>
+          <span class="chip" onclick="toggleChip(this)">🔬 理科・実験が好き</span>
+          <span class="chip" onclick="toggleChip(this)">🤝 人見知りしない</span>
+          <span class="chip" onclick="toggleChip(this)">🐱 動物が大好き</span>
+          <span class="chip" onclick="toggleChip(this)">💡 アイデアマン</span>
+          <span class="chip" onclick="toggleChip(this)">🌟 負けず嫌い</span>
+        </div>
+      </div>
+
+      <div class="profile-section-label">🎯 教育方針（複数OK）</div>
+      <div class="form-section">
+        <div class="chip-group" id="cp-policy-chips">
+          <span class="chip" onclick="toggleChip(this)">🧠 自分で考える力</span>
+          <span class="chip" onclick="toggleChip(this)">🤝 友達と協力する力</span>
+          <span class="chip" onclick="toggleChip(this)">🎯 やり抜く力・集中力</span>
+          <span class="chip" onclick="toggleChip(this)">🌍 多様な体験を積む</span>
+          <span class="chip" onclick="toggleChip(this)">🏆 チャレンジ精神</span>
+          <span class="chip" onclick="toggleChip(this)">💬 コミュニケーション力</span>
+          <span class="chip" onclick="toggleChip(this)">🎨 創造性・表現力</span>
+          <span class="chip" onclick="toggleChip(this)">📚 知的好奇心を育てる</span>
+          <span class="chip" onclick="toggleChip(this)">💪 体力・健康づくり</span>
+          <span class="chip" onclick="toggleChip(this)">🌱 自然・環境への関心</span>
+        </div>
+      </div>
+
+      <div class="profile-section-label">👨‍👩‍👧 参加スタイル</div>
+      <div class="form-section">
+        <div class="field">
+          <label>一緒に参加しますか？</label>
+          <div class="chip-group single-select" id="cp-style-chips">
+            <span class="chip" onclick="selectChip(this,'cp-style-chips')">👨‍👩‍👧 親子で一緒に体験したい</span>
+            <span class="chip" onclick="selectChip(this,'cp-style-chips')">🧒 子どもだけで参加できるもの</span>
+            <span class="chip" onclick="selectChip(this,'cp-style-chips')">🤷 どちらでもOK</span>
+          </div>
+        </div>
+        <div class="field">
+          <label>参加する人数・構成</label>
+          <div class="chip-group single-select" id="cp-group-chips">
+            <span class="chip" onclick="selectChip(this,'cp-group-chips')">🧒 子ども1人</span>
+            <span class="chip" onclick="selectChip(this,'cp-group-chips')">👫 きょうだいで参加</span>
+            <span class="chip" onclick="selectChip(this,'cp-group-chips')">👥 友達グループ</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="profile-section-label">🎭 好きな体験ジャンル（複数OK）</div>
+      <div class="form-section">
+        <div class="chip-group" id="cp-genre-chips">
+          <span class="chip" onclick="toggleChip(this)">🎭 アート・工作</span>
+          <span class="chip" onclick="toggleChip(this)">🌱 農業・自然体験</span>
+          <span class="chip" onclick="toggleChip(this)">🔭 科学・プログラミング</span>
+          <span class="chip" onclick="toggleChip(this)">🎪 音楽・演劇</span>
+          <span class="chip" onclick="toggleChip(this)">🏄 スポーツ体験</span>
+          <span class="chip" onclick="toggleChip(this)">🍳 料理・食育</span>
+        </div>
+      </div>
+
+      <div style="height:24px;"></div>
+      <button onclick="saveChildProfile()" style="width:100%;padding:14px;background:linear-gradient(90deg,#4F7FFF,#7B5EA7);color:white;border:none;border-radius:14px;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;">保存する</button>
+      <div style="height:80px;"></div>
+    </div>
+  </div>
+
 </div><!-- /app -->
+
+<nav class="bottom-nav" id="bottom-nav">
+  <button class="nav-tab active" id="nav-explore" onclick="switchTab('explore')">
+    <span class="nav-icon">🔍</span><span class="nav-label">探す</span>
+  </button>
+  <button class="nav-tab" id="nav-child" onclick="switchTab('child')">
+    <span class="nav-icon">👦</span><span class="nav-label">子どもスペース</span>
+  </button>
+  <button class="nav-tab" id="nav-growth" onclick="switchTab('growth')">
+    <span class="nav-icon">🌱</span>
+    <span class="nav-label">成長記録<sup style="font-size:7px;color:#F59E0B;font-weight:900;"> PRO</sup></span>
+  </button>
+  <button class="nav-tab" id="nav-settings" onclick="switchTab('settings')">
+    <span class="nav-icon">👤</span><span class="nav-label">設定</span>
+  </button>
+</nav>
 
 <script>
   // ── 状態管理 ──
@@ -1296,6 +1915,11 @@
   let drawerIdx         = -1;
   let currentStarRating = 0;
   let mapReturnScreen   = 'screen-welcome';
+  // スワイプUI
+  let swipeQueue        = [];
+  let likedFacilities   = [];
+  let currentSwipeFac   = null;
+  let isFetchingMore    = false;
 
   // ── 成長マップ: 定数 ──
   const AIC_LOG_KEY = 'aic_experience_log';
@@ -1356,87 +1980,232 @@
     goTo('screen-growth-map');
   }
 
+  // ── デモデータ注入（空のとき） ──
+  const DEMO_EXPERIENCE_LOG = [
+    { id:1, name:'虹色陶芸スタジオ',          category:'アート・工作',        emoji:'🎨', tag:'tag-art',
+      date:'2026/5/15', memo:'粘土で花瓶を作ったよ！先生に「センスある！」って褒めてもらってすごくうれしかった', stars:5 },
+    { id:2, name:'キッズクッキングラボ',       category:'料理・食育',          emoji:'🍳', tag:'tag-food',
+      date:'2026/4/20', memo:'チョコクッキーを焼いた。お父さんに全部食べてもらった😄', stars:4 },
+    { id:3, name:'里山たんけん隊',             category:'自然・農業',          emoji:'🌿', tag:'tag-nature',
+      date:'2026/3/10', memo:'虫を7匹見つけた！カブトムシの幼虫もいたよ。また行きたい！', stars:5 },
+    { id:4, name:'スクラッチプログラミング教室', category:'科学・プログラミング', emoji:'🔬', tag:'tag-science',
+      date:'2026/2/22', memo:'むずかしかったけど、自分で作ったゲームが動いた瞬間めっちゃうれしかった！', stars:4 },
+  ];
+
+  function injectDemoDataIfEmpty() {
+    if (!localStorage.getItem('aic_demo_injected')) {
+      localStorage.setItem(AIC_LOG_KEY, JSON.stringify(DEMO_EXPERIENCE_LOG));
+      if (!localStorage.getItem('aic_child_name')) localStorage.setItem(AIC_CAT_KEY, 'さくら');
+      localStorage.setItem('aic_demo_injected', '1');
+    }
+  }
+
+  // ── AI才能レポート生成 ──
+  function generateTalentReport(log, childName, counts) {
+    const typeIdx  = localStorage.getItem('aic_child_type');
+    const type     = typeIdx !== null ? CHILD_TYPES[+typeIdx] : null;
+    const topCats  = AIC_CATEGORIES
+      .map(c => ({ ...c, count: counts[c.key] || 0 }))
+      .sort((a,b) => b.count - a.count);
+    const active   = topCats.filter(c => c.count > 0);
+    const unexplored = topCats.filter(c => c.count === 0);
+
+    // 発見された才能（top1 の強み）
+    let talent = '';
+    if (active.length === 0) {
+      talent = 'まだ体験が記録されていません。最初の一歩を踏み出しましょう！';
+    } else {
+      const t1 = active[0];
+      talent = t1.emoji + ' 「' + t1.shortName + '』での集中力と丁寧さが際立っています。';
+      if (active.length >= 2) {
+        talent += active[1].emoji + active[1].shortName + 'でも同様の集中力が見られ、「作る・探求する力」が着実に育っています。';
+      }
+    }
+
+    // ハイライト
+    const highlights = [];
+    if (active.length >= 1 && active[0].count >= 2) highlights.push('🌟 集中力↑↑');
+    if (active.some(c => c.key === 'アート・工作'))        highlights.push('✋ 創造力↑');
+    if (active.some(c => c.key === '自然・農業' || c.key === '科学・プログラミング')) highlights.push('🔍 好奇心↑');
+    if (log.length >= 3) highlights.push('🏃 挑戦力↑');
+    if (type) highlights.push(type.emoji + ' ' + type.name + 'らしさ↑');
+    if (!highlights.length) highlights.push('🌱 成長中');
+
+    // 来月のおすすめ
+    let next = '';
+    if (unexplored.length > 0) {
+      next = unexplored[0].emoji + unexplored[0].shortName + 'の体験に挑戦してみましょう。まだ眠っている才能が見つかるかもしれません。';
+    } else if (active.length > 0) {
+      next = active[0].emoji + active[0].shortName + 'をもう1回体験すると、さらに深い才能が引き出せます。';
+    } else {
+      next = 'どんな体験でもOK！まず1回やってみることが大切です。';
+    }
+    if (type && type.genres.length > 0) {
+      const recGenre = type.genres[0];
+      next += ' ' + type.name + 'タイプには「' + recGenre + '」系がとくにおすすめです。';
+    }
+
+    return { talent, highlights, next, topCats };
+  }
+
   // ── 成長マップ描画 ──
   function renderGrowthMap() {
-    const log = JSON.parse(localStorage.getItem(AIC_LOG_KEY) || '[]');
+    injectDemoDataIfEmpty();
+
+    const log       = JSON.parse(localStorage.getItem(AIC_LOG_KEY) || '[]');
     const childName = localStorage.getItem(AIC_CAT_KEY)
-      || document.getElementById('child-name').value || 'お子さま';
+      || document.getElementById('child-name')?.value || 'お子さま';
+    const typeIdx   = localStorage.getItem('aic_child_type');
+    const type      = typeIdx !== null ? CHILD_TYPES[+typeIdx] : null;
 
-    document.getElementById('growth-child-name').textContent = childName + 'の成長マップ';
-
+    // ── ヒーロー ──
+    document.getElementById('growth-hero-name').textContent = childName + ' の成長記録';
+    document.getElementById('growth-hero-type').textContent = type ? type.emoji + ' ' + type.name + 'タイプ' : '🌱 タイプ未診断';
     const total = log.length;
-    const lv = getLevel(total);
-    document.getElementById('growth-avatar').textContent = lv.icon;
-    document.getElementById('growth-total-level').textContent = `${lv.icon} ${lv.label} • ${total}回の体験`;
+    const lv    = getLevel(total);
+    document.getElementById('growth-hero-level').textContent = lv.icon + ' ' + lv.label;
 
     const counts = {};
     AIC_CATEGORIES.forEach(c => counts[c.key] = 0);
     log.forEach(e => { if (counts[e.category] !== undefined) counts[e.category]++; });
 
-    // レーダーチャート
-    drawRadarChart(AIC_CATEGORIES.map(c => Math.min(counts[c.key] * 20, 100)));
+    const genres  = Object.values(counts).filter(v => v > 0).length;
+    const badges  = [
+      { icon:'🌱', name:'はじめての体験！', earned: total >= 1 },
+      { icon:'🎨', name:'アートデビュー',   earned: counts['アート・工作'] >= 1 },
+      { icon:'🔬', name:'科学者の卵',        earned: counts['科学・プログラミング'] >= 1 },
+      { icon:'🌟', name:'3ジャンル制覇！',   earned: genres >= 3 },
+      { icon:'🍳', name:'料理人デビュー',    earned: counts['料理・食育'] >= 1 },
+      { icon:'🌈', name:'全ジャンル制覇！',  earned: genres >= 6 },
+      { icon:'🏆', name:'体験マスター',       earned: total >= 5 },
+      { icon:'💎', name:'10回達成！',         earned: total >= 10 },
+    ];
+    const earnedBadges = badges.filter(b => b.earned).length;
 
-    // カテゴリ進捗バー（0から伸びるアニメーション）
+    document.getElementById('gph-exp-count').textContent   = total;
+    document.getElementById('gph-genre-count').textContent = genres;
+    document.getElementById('gph-badge-count').textContent = earnedBadges;
+
+    // ── AI才能レポート ──
+    document.getElementById('tr-child-name').textContent = childName;
+    const now = new Date();
+    document.getElementById('tr-month').textContent = now.getFullYear() + '年' + (now.getMonth()+1) + '月';
+    const report = generateTalentReport(log, childName, counts);
+    document.getElementById('tr-talent').textContent    = report.talent;
+    document.getElementById('tr-next').textContent      = report.next;
+    document.getElementById('tr-highlights').innerHTML  = report.highlights.map(h =>
+      '<span class="tr-hl">' + h + '</span>'
+    ).join('');
+
+    // ── 才能ランキング ──
+    const activeCats = report.topCats.filter(c => c.count > 0);
+    const rankEl = document.getElementById('talent-ranking');
+    if (activeCats.length > 0) {
+      rankEl.style.display = 'block';
+      const medals = ['🥇','🥈','🥉'];
+      document.getElementById('talent-ranking-items').innerHTML = activeCats.slice(0,3).map((c,i) => {
+        const pct = Math.min(c.count / (activeCats[0].count || 1) * 100, 100);
+        return '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">'
+          + '<span style="font-size:20px;width:24px;text-align:center;">' + (medals[i] || '🏅') + '</span>'
+          + '<span style="font-size:18px;">' + c.emoji + '</span>'
+          + '<div style="flex:1;">'
+          + '<div style="display:flex;justify-content:space-between;font-size:12px;font-weight:700;margin-bottom:3px;">'
+          + '<span>' + c.shortName + '</span><span style="color:var(--sub);">' + c.count + '回</span></div>'
+          + '<div style="height:8px;background:var(--border);border-radius:4px;overflow:hidden;">'
+          + '<div style="height:100%;border-radius:4px;background:' + c.color + ';width:' + pct + '%;transition:width 0.6s ease;"></div>'
+          + '</div></div></div>';
+      }).join('');
+    } else {
+      rankEl.style.display = 'none';
+    }
+
+    // ── 才能マップ ──
+    drawRadarChart(AIC_CATEGORIES.map(c => Math.min(counts[c.key] * 20, 100)));
     document.getElementById('growth-cat-bars').innerHTML = AIC_CATEGORIES.map(c => {
       const cnt = counts[c.key];
       const pct = Math.min(cnt * 20, 100);
       const clv = getLevel(cnt);
-      return `<div class="cat-row">
-        <div class="cat-label-wrap"><span class="cat-emoji">${c.emoji}</span><span class="cat-name">${c.shortName}</span></div>
-        <div class="cat-track"><div class="cat-fill" data-target="${pct}" style="width:0%;background:${c.color}"></div></div>
-        <span class="cat-badge">${clv.icon}${clv.label}</span>
-        <div class="cat-cnt">${cnt}回</div>
-      </div>`;
+      return '<div class="cat-row">'
+        + '<div class="cat-label-wrap"><span class="cat-emoji">' + c.emoji + '</span><span class="cat-name">' + c.shortName + '</span></div>'
+        + '<div class="cat-track"><div class="cat-fill" data-target="' + pct + '" style="width:0%;background:' + c.color + '"></div></div>'
+        + '<span class="cat-badge">' + clv.icon + clv.label + '</span>'
+        + '<div class="cat-cnt">' + cnt + '回</div>'
+        + '</div>';
     }).join('');
-    // バーをアニメーション
     setTimeout(() => {
       document.querySelectorAll('#growth-cat-bars .cat-fill[data-target]').forEach(el => {
         el.style.width = el.dataset.target + '%';
       });
     }, 80);
-    // レベルアップ検知
     checkLevelUps(counts);
 
-    // ② チャレンジ更新
+    // ── 思い出ストーリー（写真なし・テキスト中心） ──
+    document.getElementById('memory-album').innerHTML = log.length
+      ? log.slice(0, 8).map(e => {
+          const stars = (e.stars || 0);
+          const starStr = '★'.repeat(stars) + '☆'.repeat(5 - stars);
+          return '<div class="memory-entry">'
+            + '<div class="memory-entry-icon">' + e.emoji + '</div>'
+            + '<div class="memory-entry-body">'
+            + '<div class="memory-entry-name">' + e.name + '</div>'
+            + '<div class="memory-entry-meta">' + e.date + '｜' + e.category + '</div>'
+            + (e.memo ? '<div class="memory-entry-memo">💬 ' + e.memo + '</div>' : '')
+            + '<div class="memory-stars">' + starStr + '</div>'
+            + '</div></div>';
+        }).join('')
+      : '<div style="text-align:center;padding:24px;color:var(--sub);font-size:13px;">体験を記録するとここにストーリーが貯まります 📖</div>';
+
+    // ── チャレンジ ──
     const natureCnt = counts['自然・農業'];
     const artCnt    = counts['アート・工作'];
     document.getElementById('ch-nature-bar').style.width   = Math.min(natureCnt / 2 * 100, 100) + '%';
-    document.getElementById('ch-nature-label').textContent = natureCnt >= 2 ? '✅ 達成！' : `${natureCnt} / 2 回達成`;
-    document.getElementById('ch-art-bar').style.width      = artCnt >= 1 ? '100%' : '0%';
-    document.getElementById('ch-art-label').textContent    = artCnt >= 1 ? '✅ 達成！' : '0 / 1 回達成';
+    document.getElementById('ch-nature-label').textContent = natureCnt >= 2 ? '✅ 達成！' : natureCnt + ' / 2 回達成';
+    document.getElementById('ch-art-bar').style.width      = Math.min(artCnt / 2 * 100, 100) + '%';
+    document.getElementById('ch-art-label').textContent    = artCnt >= 2 ? '✅ 達成！' : artCnt + ' / 2 回達成';
 
-    // ③ バッジ
-    const genres = Object.values(counts).filter(v => v > 0).length;
-    const badges = [
-      { icon: '🌱', name: 'はじめての<br>体験！',  earned: total >= 1 },
-      { icon: '🎨', name: 'アート<br>デビュー',    earned: counts['アート・工作'] >= 1 },
-      { icon: '🔬', name: '科学者<br>の卵',         earned: counts['科学・プログラミング'] >= 1 },
-      { icon: '🌟', name: '3ジャンル<br>制覇！',    earned: genres >= 3 },
-      { icon: '🍳', name: '料理人<br>デビュー',     earned: counts['料理・食育'] >= 1 },
-      { icon: '🌈', name: '全ジャンル<br>制覇！',   earned: genres >= 6 },
-      { icon: '🏆', name: '体験<br>マスター',        earned: total >= 5 },
-      { icon: '💎', name: '10回<br>達成！',          earned: total >= 10 },
-    ];
-    document.getElementById('badge-grid').innerHTML = badges.map(b => `
-      <div class="badge-cell">
-        <div class="badge-icon ${b.earned ? 'earned' : 'locked'}">${b.icon}</div>
-        <div class="badge-lbl ${b.earned ? '' : 'locked'}">${b.name}</div>
-      </div>`).join('');
+    // ── バッジ ──
+    document.getElementById('badge-grid').innerHTML = badges.map(b =>
+      '<div class="badge-cell">'
+      + '<div class="badge-icon ' + (b.earned ? 'earned' : 'locked') + '">' + b.icon + '</div>'
+      + '<div class="badge-lbl ' + (b.earned ? '' : 'locked') + '">' + b.name + '</div>'
+      + '</div>'
+    ).join('');
+  }
 
-    // 体験ログ
-    document.getElementById('growth-log').innerHTML = log.length
-      ? log.slice(0, 10).map(e => `
-          <div class="log-item">
-            <div class="log-icon-wrap">${e.emoji}</div>
-            <div class="log-body">
-              <div class="log-name">${e.name}</div>
-              <div class="log-meta">
-                <span class="card-tag ${e.tag}" style="font-size:10px;padding:2px 6px;">${e.category}</span>
-                <span class="log-date">${e.date}</span>
-              </div>
-            </div>
-          </div>`).join('')
-      : '<div style="text-align:center;padding:24px;color:var(--sub);font-size:14px;">体験を予約するとここに記録されます 🗺️</div>';
+  // ── 思い出追加モーダル ──
+  function showAddMemoryModal() {
+    const m = document.createElement('div');
+    m.id = 'add-memory-modal';
+    m.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:300;display:flex;align-items:flex-end;justify-content:center;';
+    m.innerHTML = '<div style="background:white;border-radius:24px 24px 0 0;width:100%;max-width:430px;padding:24px 24px 40px;">'
+      + '<div style="font-size:16px;font-weight:900;margin-bottom:16px;">📝 体験を追加する</div>'
+      + '<div class="field" style="margin-bottom:12px;"><label>施設・体験名</label><input type="text" id="add-mem-name" placeholder="例：陶芸スタジオ" style="width:100%;box-sizing:border-box;"></div>'
+      + '<div class="field" style="margin-bottom:12px;"><label>ジャンル</label><select id="add-mem-cat" style="width:100%;box-sizing:border-box;"><option>アート・工作</option><option>科学・プログラミング</option><option>自然・農業</option><option>料理・食育</option><option>音楽・演劇</option><option>スポーツ</option></select></div>'
+      + '<div class="field" style="margin-bottom:12px;"><label>子どもの感想（任意）</label><textarea id="add-mem-memo" rows="2" placeholder="どうだった？楽しかった？" style="width:100%;box-sizing:border-box;border:1.5px solid var(--border);border-radius:10px;padding:10px;font-family:inherit;font-size:14px;resize:none;"></textarea></div>'
+      + '<div style="display:flex;gap:8px;">'
+      + '<button onclick="document.getElementById(\'add-memory-modal\').remove()" style="flex:1;padding:12px;background:none;border:1.5px solid var(--border);border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;">キャンセル</button>'
+      + '<button onclick="saveAddedMemory()" style="flex:1;padding:12px;background:var(--primary);color:white;border:none;border-radius:10px;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;">追加する</button>'
+      + '</div>'
+      + '</div>';
+    document.body.appendChild(m);
+  }
+
+  function saveAddedMemory() {
+    const name = document.getElementById('add-mem-name').value.trim();
+    if (!name) return;
+    const catKey  = document.getElementById('add-mem-cat').value;
+    const memo    = document.getElementById('add-mem-memo').value.trim();
+    const catData = AIC_CATEGORIES.find(c => c.key === catKey) || AIC_CATEGORIES[0];
+    const tagMap  = { 'アート・工作':'tag-art', '科学・プログラミング':'tag-science',
+                      '自然・農業':'tag-nature', '料理・食育':'tag-food',
+                      '音楽・演劇':'tag-music',  'スポーツ':'tag-art' };
+    const log = JSON.parse(localStorage.getItem(AIC_LOG_KEY) || '[]');
+    log.unshift({ id: Date.now(), name, category: catKey, emoji: catData.emoji,
+                  tag: tagMap[catKey] || 'tag-art',
+                  date: new Date().toLocaleDateString('ja-JP'), memo, stars: 4 });
+    localStorage.setItem(AIC_LOG_KEY, JSON.stringify(log.slice(0, 50)));
+    document.getElementById('add-memory-modal').remove();
+    renderGrowthMap();
   }
 
   // ── レーダーチャート（SVG） ──
@@ -1556,138 +2325,323 @@
     setTimeout(() => t.remove(), 2800);
   }
 
-  // ── ナビゲーション ──
+  // ── タブ・ナビゲーション ──
+  const NAV_HIDDEN = new Set(['screen-register','screen-loading','screen-proposals','screen-booking','screen-success','screen-feedback','screen-complete']);
+  const SCREEN_TAB = {
+    'screen-welcome':'explore','screen-profile':'explore',
+    'screen-child':'child','screen-diagnosis':'child','screen-type-result':'child',
+    'screen-growth-map':'growth',
+    'screen-settings':'settings','screen-child-profile':'settings',
+  };
+  const TAB_HOME = { explore:'screen-welcome', child:'screen-child', growth:'screen-growth-map', settings:'screen-settings' };
+
   function goTo(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
+    const el = document.getElementById(id);
+    if (el) el.classList.add('active');
     window.scrollTo(0, 0);
     if (id === 'screen-loading') startLoadingAnimation();
+    if (id === 'screen-child') showChildHub();
+    if (id === 'screen-growth-map') renderGrowthMap();
+    if (id === 'screen-settings') renderSettings();
+    if (id === 'screen-child-profile') loadChildProfileForm();
+    if (id === 'screen-profile') renderProfileBanner();
+    const nav = document.getElementById('bottom-nav');
+    if (NAV_HIDDEN.has(id)) {
+      nav.classList.add('hidden');
+    } else {
+      nav.classList.remove('hidden');
+      const tab = SCREEN_TAB[id];
+      document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+      if (tab) { const bt = document.getElementById('nav-'+tab); if(bt) bt.classList.add('active'); }
+    }
+  }
+
+  function switchTab(tab) {
+    if (tab === 'growth' && !localStorage.getItem('aic_premium')) {
+      showPremiumModal();
+      return;
+    }
+    goTo(TAB_HOME[tab]);
   }
   function toggleChip(el) { el.classList.toggle('selected'); }
 
-  // ── カード: 気になる ──
-  function likeCard(n) {
-    document.querySelectorAll('.proposal-card').forEach(c => c.classList.remove('picked'));
-    document.getElementById('card-' + n).classList.add('picked');
-    selectedFacility = fetchedFacilities[n - 1] || null;
-    const btn = document.getElementById('confirm-btn');
-    btn.disabled = false;
-    btn.style.opacity = '1';
+  function selectChip(el, groupId) {
+    document.querySelectorAll('#' + groupId + ' .chip').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
   }
 
-  // ── カード: 違う → 差し替え ──
-  async function nopeCard(n) {
-    const card = document.getElementById('card-' + n);
-    card.style.opacity = '0.35';
-    card.style.pointerEvents = 'none';
-    const exclude = [...seenIds].join(',');
-    try {
-      const resp = await fetch(`/api/facilities?${currentParams}&exclude=${exclude}&limit=1`);
-      const data = await resp.json();
-      if (data.length) {
-        fetchedFacilities[n - 1] = data[0];
-        seenIds.add(data[0].place_id);
-        card.outerHTML = buildCard(data[0], n);
-      } else {
-        card.innerHTML = '<div style="padding:20px;text-align:center;color:var(--sub);font-size:13px;">他の候補がありません</div>';
-        card.style.opacity = '1';
-      }
-    } catch {
-      card.style.opacity = '1';
-      card.style.pointerEvents = '';
+  function setDateChip(el, type) {
+    document.querySelectorAll('#date-chips .chip').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    const input = document.getElementById('preferred-date');
+    if (type === 'custom') {
+      input.style.display = 'block';
+      input.focus();
+    } else {
+      input.style.display = 'none';
+      const today = new Date();
+      const dow = today.getDay();
+      const daysToSat = type === 'this-weekend' ? (6 - dow + 7) % 7 || 7 : (6 - dow + 7) % 7 + 7;
+      const sat = new Date(today);
+      sat.setDate(today.getDate() + daysToSat);
+      input.value = sat.toISOString().split('T')[0];
     }
   }
 
-  // ── 次の3件 ──
-  async function loadNextBatch() {
-    const btn = document.getElementById('next-batch-btn');
-    btn.textContent = '読み込み中…';
-    btn.disabled = true;
-    const exclude = [...seenIds].join(',');
-    try {
-      const resp = await fetch(`/api/facilities?${currentParams}&exclude=${exclude}&limit=3`);
-      const data = await resp.json();
-      if (!data.length) { btn.textContent = 'これ以上の候補がありません'; return; }
-      selectedFacility = null;
-      const confirmBtn = document.getElementById('confirm-btn');
-      confirmBtn.disabled = true;
-      confirmBtn.style.opacity = '0.45';
-      renderProposals(data);
-    } finally {
-      btn.textContent = '次の3件を見る →';
-      btn.disabled = false;
-    }
-  }
+  // ══════════════════════════════════
+  //  スワイプUI
+  // ══════════════════════════════════
 
-  // ── カードHTML生成 ──
-  function buildCard(f, n) {
-    const cat    = f.category || { label: '体験', emoji: '✨', tag: 'tag-art', bg: 'card-img-1' };
-    const photos = f.photo_urls || [];
-    const score  = f.match_score || 75;
-
-    const isEvent = f.is_event || false;
-    const imgs = photos.length
-      ? photos.map((u, i) => `<div class="cimg ${i===0?'active':''}" style="background-image:url(${u})"></div>`).join('')
-      : `<div class="cimg active ${cat.bg}">${cat.emoji}</div>`;
-    const nav = photos.length > 1
-      ? `<button class="carousel-btn left"  onclick="event.stopPropagation();photoPrev(this)">‹</button>
-         <button class="carousel-btn right" onclick="event.stopPropagation();photoNext(this)">›</button>
-         <div class="carousel-dots">${photos.map((_,i)=>`<span class="cdot ${i===0?'active':''}"></span>`).join('')}</div>` : '';
-    const eventDateBadge = isEvent && f.event_display
-      ? `<div class="event-date-badge">📅 ${f.event_display.split(' ')[0]}</div>` : '';
-
-    const aiReason = f.ai_reason
-      ? `<div class="ai-reason-box"><div class="ai-reason-label">🤖 AIの推薦理由</div><div class="ai-reason-text">${f.ai_reason}</div></div>` : '';
-
-    const benefits = (f.benefits || []).length
-      ? `<div class="benefits-box"><div class="benefits-label">この体験で得られること</div>${(f.benefits||[]).map(b=>`<div class="benefit-item">${b}</div>`).join('')}</div>` : '';
-
-    return `
-      <div class="proposal-card" id="card-${n}" data-idx="${n-1}">
-        <div class="card-carousel">
-          <div class="carousel-imgs">${imgs}</div>
-          ${nav}
-          ${eventDateBadge}
-          <div class="match-badge">${score}% マッチ</div>
-        </div>
-        <div class="card-body">
-          <div style="display:flex;gap:6px;align-items:center;margin-bottom:8px;flex-wrap:wrap;">
-            <div class="card-tag ${cat.tag}" style="margin-bottom:0;">${cat.label}</div>
-            ${isEvent ? '<div class="card-tag" style="background:#FFF0F0;color:#C62828;margin-bottom:0;">🗓️ 期間限定イベント</div>' : ''}
-          </div>
-          <h3>${f.name}</h3>
-          <div class="location">📍 ${f.short_address || f.address}</div>
-          ${isEvent
-            ? `<div class="event-meta-row">
-                 📅 ${f.event_display || ''}
-                 ${f.event_remaining != null
-                   ? `<span class="cap-badge ${f.event_remaining <= 3 ? 'urgent' : ''}">残り${f.event_remaining}席</span>`
-                   : ''}
-               </div>`
-            : `<div class="card-meta"><span>⭐ ${f.rating??'—'}</span><span>💬 ${f.review_count??0}件の口コミ</span></div>`
-          }
-          ${aiReason}${benefits}
-          <div class="pick-indicator">💚 このプランを選択中</div>
-        </div>
-        <div class="card-actions">
-          <button class="btn-nope"   onclick="nopeCard(${n})">✕ 違う</button>
-          <button class="btn-detail" onclick="openDrawer(${n-1})">詳細 ▼</button>
-          <button class="btn-like"   onclick="likeCard(${n})">💚 気になる</button>
-        </div>
-      </div>`;
-  }
-
-  // ── 提案描画 ──
+  // 初期描画（APIレスポンス受け取り）
   function renderProposals(facilities) {
-    fetchedFacilities = facilities;
+    likedFacilities = [];
+    swipeQueue = [...facilities];
     facilities.forEach(f => seenIds.add(f.place_id));
-    const childName = document.getElementById('child-name').value || 'お子さま';
-    document.getElementById('proposal-sub').textContent =
-      `AIが${childName}のプロフィールをもとに厳選しました。「気になる」か「違う」で反応してください。`;
-    document.getElementById('proposal-container').innerHTML =
-      facilities.length
-        ? facilities.map((f, i) => buildCard(f, i+1)).join('')
-        : '<p style="text-align:center;color:#6B7280;padding:20px;">施設データが見つかりませんでした。</p>';
+    updateLikeCounter();
+    showNextCard();
+    initSwipeDrag();
+  }
+
+  // 次のカードを表示
+  function showNextCard() {
+    if (swipeQueue.length < 3) fetchMoreCards();
+    if (swipeQueue.length === 0) {
+      document.getElementById('swipe-card').innerHTML =
+        '<div style="padding:40px 20px;text-align:center;color:var(--sub);font-size:14px;">👀 現在表示できる候補をすべて見ました。<br>少し待つと追加候補が届きます。</div>';
+      currentSwipeFac = null;
+      return;
+    }
+    currentSwipeFac = swipeQueue.shift();
+    renderSwipeCard(currentSwipeFac);
+    const card = document.getElementById('swipe-card');
+    card.style.transition = 'none';
+    card.style.transform = '';
+    card.style.opacity = '1';
+  }
+
+  // カードのHTML描画（写真カルーセル＋AI推薦理由＋メリット＋口コミ）
+  function renderSwipeCard(f) {
+    const cat     = f.category || { label:'体験', emoji:'✨', bg:'card-img-1' };
+    const photos  = f.photo_urls || [];
+    const isEvent = f.is_event;
+
+    // 写真カルーセル
+    let photoHtml = '';
+    if (photos.length) {
+      photoHtml = '<div class="carousel-imgs">'
+        + photos.map((u, i) => '<div class="cimg ' + (i===0?'active':'') + '" style="background-image:url(' + u + ')"></div>').join('')
+        + '</div>';
+      if (photos.length > 1) {
+        photoHtml += '<button class="carousel-btn left" onclick="event.stopPropagation();scPhotoPrev()">&#8249;</button>'
+          + '<button class="carousel-btn right" onclick="event.stopPropagation();scPhotoNext()">&#8250;</button>'
+          + '<div class="carousel-dots">' + photos.map((_,i) => '<span class="cdot ' + (i===0?'active':'') + '"></span>').join('') + '</div>';
+      }
+    } else {
+      photoHtml = '<div class="cimg active ' + cat.bg + '">' + cat.emoji + '</div>';
+    }
+
+    // AI推薦理由
+    const aiBox = f.ai_reason
+      ? '<div class="ai-reason-box"><div class="ai-reason-label">🤖 AIの推薦理由</div><div class="ai-reason-text">' + f.ai_reason + '</div></div>'
+      : '';
+
+    // メリット
+    const benefitsHtml = (f.benefits || []).length
+      ? '<div class="benefits-box"><div class="benefits-label">この体験で得られること</div>'
+        + (f.benefits || []).map(b => '<div class="benefit-item">' + b + '</div>').join('')
+        + '</div>'
+      : '';
+
+    // 口コミ（最大2件・80文字）
+    const reviews = (f.reviews || []).slice(0, 2);
+    const reviewsHtml = reviews.length
+      ? '<div style="margin-top:10px;"><div class="benefits-label">💬 口コミ</div>'
+        + reviews.map(r => '<div class="review-item"><div class="review-meta">⭐' + r.rating + ' ' + r.author + '</div>'
+          + '<div class="review-text">' + (r.text||'').slice(0,80) + ((r.text||'').length>80?'…':'') + '</div></div>').join('')
+        + '</div>'
+      : '';
+
+    // イベント or 施設のメタ情報
+    const eventMeta = isEvent
+      ? '<div class="event-meta-row">📅 ' + (f.event_display || '')
+        + (f.event_remaining != null
+          ? ' <span class="cap-badge' + (f.event_remaining <= 3 ? ' urgent' : '') + '">残り' + f.event_remaining + '席</span>'
+          : '') + '</div>'
+      : '<div class="card-meta"><span>⭐ ' + (f.rating ?? '—') + '</span><span>💬 ' + (f.review_count ?? 0) + '件の口コミ</span></div>';
+
+    document.getElementById('swipe-card').innerHTML =
+      '<div class="swipe-card-photo card-carousel swipe-drag-handle">'
+      + photoHtml
+      + '<div class="swipe-photo-grad"></div>'
+      + '<div class="swipe-match-badge">' + (f.match_score || 75) + '% マッチ</div>'
+      + (isEvent ? '<div class="swipe-event-badge">📅 期間限定</div>' : '')
+      + '</div>'
+      + '<div class="swipe-card-info" style="overflow-y:auto;-webkit-overflow-scrolling:touch;touch-action:pan-y;max-height:260px;">'
+      + '<div class="swipe-cat">' + cat.emoji + ' ' + cat.label + '</div>'
+      + '<div class="swipe-name">' + f.name + '</div>'
+      + '<div class="location">📍 ' + (f.short_address || '') + '</div>'
+      + eventMeta
+      + aiBox
+      + benefitsHtml
+      + reviewsHtml
+      + '</div>';
+
+    fetchedFacilities = [f];
+    drawerIdx = 0;
+  }
+
+  // スワイプカード内の写真送り
+  function scPhotoPrev() {
+    const c = document.querySelector('#swipe-card .swipe-card-photo');
+    if (c) rotatePhoto(c, -1);
+  }
+  function scPhotoNext() {
+    const c = document.querySelector('#swipe-card .swipe-card-photo');
+    if (c) rotatePhoto(c, 1);
+  }
+
+  // 4アクションの処理
+  function doSwipe(action) {
+    if (!currentSwipeFac && action !== 'book') return;
+    const card = document.getElementById('swipe-card');
+
+    if (action === 'like') {
+      likedFacilities.push(currentSwipeFac);
+      updateLikeCounter();
+      animateCard(card, 'right', showNextCard);
+    } else if (action === 'nope' || action === 'skip') {
+      animateCard(card, 'left', showNextCard);
+    } else if (action === 'book') {
+      selectedFacility = currentSwipeFac || likedFacilities[likedFacilities.length - 1];
+      if (selectedFacility) confirmPlan();
+    }
+  }
+
+  // カードを飛ばすアニメーション
+  function animateCard(card, direction, cb) {
+    const tx  = direction === 'right' ? '150%' : '-150%';
+    const rot = direction === 'right' ? '22deg' : '-22deg';
+    card.style.transition = 'transform 0.34s ease, opacity 0.34s';
+    card.style.transform  = `translateX(${tx}) rotate(${rot})`;
+    card.style.opacity    = '0';
+    document.getElementById('ov-like').style.opacity = 0;
+    document.getElementById('ov-nope').style.opacity = 0;
+    setTimeout(cb, 340);
+  }
+
+  // ライクカウンター更新
+  function updateLikeCounter() {
+    const n    = likedFacilities.length;
+    const pill = document.getElementById('swipe-like-pill');
+    const btn  = document.getElementById('swipe-view-btn');
+    document.getElementById('swipe-like-count').textContent = n;
+    pill.style.display = n > 0 ? 'flex' : 'none';
+    btn.style.display  = n > 0 ? 'block' : 'none';
+  }
+
+  // 追加フェッチ（キューが少なくなったとき）
+  async function fetchMoreCards() {
+    if (isFetchingMore) return;
+    isFetchingMore = true;
+    const exclude = [...seenIds].join(',');
+    try {
+      const resp = await fetch(`/api/facilities?${currentParams}&exclude=${exclude}&limit=5`);
+      const data = await resp.json();
+      data.forEach(f => { seenIds.add(f.place_id); swipeQueue.push(f); });
+      if (!currentSwipeFac && swipeQueue.length) showNextCard();
+    } catch (e) { /* 無視 */ }
+    finally { isFetchingMore = false; }
+  }
+
+  // ライクリストを表示
+  function showLikedList() {
+    document.getElementById('liked-inner').innerHTML = `
+      <div class="liked-hdr">
+        <h3>❤️ キープした体験 <span class="liked-cnt">${likedFacilities.length}</span></h3>
+        <button onclick="hideLikedList()">✕</button>
+      </div>
+      ${likedFacilities.map((f, i) => {
+        const cat   = f.category || {};
+        const thumb = f.photo_urls?.[0]
+          ? `background-image:url(${f.photo_urls[0]});background-size:cover;background-position:center;`
+          : '';
+        return `
+          <div class="liked-item">
+            <div class="liked-thumb ${!f.photo_urls?.[0] ? (cat.bg||'') : ''}" style="${thumb}">
+              ${!f.photo_urls?.[0] ? (cat.emoji||'✨') : ''}
+            </div>
+            <div class="liked-info">
+              <div class="liked-item-name">${f.name}</div>
+              <div class="liked-item-meta">${cat.label||''} · ${f.short_address||''}</div>
+            </div>
+            <button class="liked-book" onclick="bookFromLiked(${i})">予約 →</button>
+          </div>`;
+      }).join('')}
+      <button class="liked-continue" onclick="hideLikedList()">← 続けてスワイプする</button>
+    `;
+    document.getElementById('liked-modal').classList.add('open');
+  }
+
+  function hideLikedList() {
+    document.getElementById('liked-modal').classList.remove('open');
+  }
+
+  function bookFromLiked(idx) {
+    selectedFacility = likedFacilities[idx];
+    hideLikedList();
+    confirmPlan();
+  }
+
+  // ── タッチ/ドラッグ操作（写真エリアのみ対象）──
+  function initSwipeDrag() {
+    const stack = document.getElementById('swipe-stack');
+    let startX = 0, startY = 0, dragging = false, lockAxis = null;
+    const card = () => document.getElementById('swipe-card');
+    const ovL  = document.getElementById('ov-like');
+    const ovN  = document.getElementById('ov-nope');
+
+    function isHandle(el) {
+      return el.closest('.swipe-drag-handle') !== null;
+    }
+    function onStart(cx, cy, target) {
+      if (!currentSwipeFac || !isHandle(target)) return;
+      startX = cx; startY = cy; dragging = true; lockAxis = null;
+      card().style.transition = 'none';
+    }
+    function onMove(cx, cy) {
+      if (!dragging) return;
+      const dx = cx - startX, dy = cy - startY;
+      if (!lockAxis) {
+        if (Math.abs(dx) > 6 || Math.abs(dy) > 6)
+          lockAxis = Math.abs(dx) > Math.abs(dy) ? 'h' : 'v';
+      }
+      if (lockAxis !== 'h') return;
+      const rot = dx * 0.08;
+      card().style.transform = 'translateX(' + dx + 'px) rotate(' + rot + 'deg)';
+      const p = Math.min(Math.abs(dx) / 90, 1);
+      if (dx > 0) { ovL.style.opacity = p; ovN.style.opacity = 0; }
+      else        { ovN.style.opacity = p; ovL.style.opacity = 0; }
+    }
+    function onEnd(cx) {
+      if (!dragging) return;
+      dragging = false;
+      const dx = cx - startX;
+      ovL.style.opacity = 0; ovN.style.opacity = 0;
+      if (lockAxis === 'h' && Math.abs(dx) > 80) { doSwipe(dx > 0 ? 'like' : 'nope'); }
+      else {
+        card().style.transition = 'transform 0.3s';
+        card().style.transform  = '';
+      }
+      lockAxis = null;
+    }
+
+    stack.addEventListener('mousedown',  e => onStart(e.clientX, e.clientY, e.target));
+    document.addEventListener('mousemove', e => { if (dragging) onMove(e.clientX, e.clientY); });
+    document.addEventListener('mouseup',   e => onEnd(e.clientX));
+    stack.addEventListener('touchstart', e => onStart(e.touches[0].clientX, e.touches[0].clientY, e.target), { passive: true });
+    document.addEventListener('touchmove', e => { if (dragging) onMove(e.touches[0].clientX, e.touches[0].clientY); }, { passive: true });
+    document.addEventListener('touchend',  e => onEnd(e.changedTouches[0].clientX));
   }
 
   // ── 写真カルーセル ──
@@ -1775,12 +2729,350 @@
     document.getElementById('star-label').textContent = starLabels[n];
   }
 
+  // ══════════════════════════════════
+  //  子どもスペース
+  // ══════════════════════════════════
+
+  const CHILD_TYPES = [
+    { id:0, name:'アーティスト',       emoji:'🎨', color:'#FF6B9D', color2:'#FF8E53',
+      desc:'つくること・かくことが大すき！アートや工作でじぶんを表現するのが得意なタイプ。',
+      genres:['アート','工作'],
+      powers:[{e:'🎨',t:'独創力'},{e:'✨',t:'表現力'},{e:'💭',t:'想像力'}] },
+    { id:1, name:'サイエンティスト',   emoji:'🔬', color:'#4FACFE', color2:'#00F2FE',
+      desc:'なんで？どうして？をとことん調べたい！実験や発見が大すきなタイプ。',
+      genres:['科学','プログラミング'],
+      powers:[{e:'🔍',t:'観察力'},{e:'💡',t:'発見力'},{e:'🧠',t:'論理力'}] },
+    { id:2, name:'ネイチャーキッズ',   emoji:'🌿', color:'#43E97B', color2:'#38F9D7',
+      desc:'自然・生き物・外あそびが大すき！のびのびと体を動かすのが好きなタイプ。',
+      genres:['農業','自然'],
+      powers:[{e:'🌿',t:'観察力'},{e:'💚',t:'やさしさ'},{e:'🏃',t:'行動力'}] },
+    { id:3, name:'パフォーマー',       emoji:'🎵', color:'#A855F7', color2:'#EC4899',
+      desc:'みんなの前で輝くのが大すき！音楽・ダンス・演劇で表現するのが得意なタイプ。',
+      genres:['音楽','演劇'],
+      powers:[{e:'🎭',t:'表現力'},{e:'🌟',t:'存在感'},{e:'🎵',t:'リズム感'}] },
+    { id:4, name:'アスリート',         emoji:'⚽', color:'#F97316', color2:'#FBBF24',
+      desc:'体を動かすことが大すき！スポーツで限界に挑戦するのが楽しいタイプ。',
+      genres:['スポーツ'],
+      powers:[{e:'💪',t:'体力'},{e:'🏆',t:'負けん気'},{e:'⚡',t:'瞬発力'}] },
+    { id:5, name:'グルメクリエイター', emoji:'🍳', color:'#F59E0B', color2:'#FCD34D',
+      desc:'料理・食べること・作ることが大すき！食で人を幸せにするのが得意なタイプ。',
+      genres:['料理','食育'],
+      powers:[{e:'🍳',t:'創造力'},{e:'👃',t:'感覚力'},{e:'❤️',t:'思いやり'}] },
+    { id:6, name:'チームリーダー',     emoji:'🤝', color:'#10B981', color2:'#34D399',
+      desc:'みんなと一緒に何かするのが大すき！友達をまとめて楽しくするのが得意なタイプ。',
+      genres:['スポーツ','アート'],
+      powers:[{e:'🤝',t:'まとめる力'},{e:'💬',t:'伝える力'},{e:'🌈',t:'共感力'}] },
+    { id:7, name:'エクスプローラー',   emoji:'🌟', color:'#6366F1', color2:'#8B5CF6',
+      desc:'なんでもやってみたい好奇心旺盛タイプ！新しいことへの挑戦が大好き！',
+      genres:['科学','アート','自然'],
+      powers:[{e:'🌍',t:'好奇心'},{e:'🗺️',t:'挑戦力'},{e:'⚡',t:'適応力'}] },
+  ];
+
+  const QUIZ_QUESTIONS = [
+    { q:'いまから なんでも できるとしたら、\nどれが いちばん たのしそう？',
+      opts:[{emoji:'🎨',text:'えをかいたり\nものをつくる',s:[[0,2],[5,1]]},{emoji:'🌿',text:'そとであそぶ・\nいきものをさがす',s:[[2,2],[4,1]]},{emoji:'🎵',text:'うたったり\nおどったりする',s:[[3,2],[6,1]]},{emoji:'🔬',text:'じっけんしたり\nしらべる',s:[[1,2],[7,1]]}]},
+    { q:'ともだちと あそぶとき、\nどんなのが すき？',
+      opts:[{emoji:'👥',text:'みんなで わいわい',s:[[6,2],[3,1]]},{emoji:'🏃',text:'うごきまわって\nあそぶ',s:[[4,2],[2,1]]},{emoji:'🖌',text:'じっくり\nものをつくる',s:[[0,2],[5,1]]},{emoji:'🔭',text:'ふしぎを\nかんがえる',s:[[1,2],[7,1]]}]},
+    { q:'どんなとき、いちばん たのしい？',
+      opts:[{emoji:'🎉',text:'みんなのまえで\nなにかするとき',s:[[3,2],[6,1]]},{emoji:'🌸',text:'だれかを\nたすけているとき',s:[[6,2],[5,1]]},{emoji:'🏆',text:'れんしゅうして\nじょうずになったとき',s:[[4,2],[0,1]]},{emoji:'💡',text:'しらなかったことを\nしったとき',s:[[1,2],[7,2]]}]},
+    { q:'きゅうに じゆうな じかんが\nできたら なにする？',
+      opts:[{emoji:'🍳',text:'りょうりや\nかしをつくる',s:[[5,2],[0,1]]},{emoji:'🌳',text:'そとに でかける\nこうえん・しぜん',s:[[2,2],[4,1]]},{emoji:'🎬',text:'おんがくや\nどうがをみる',s:[[3,2],[7,1]]},{emoji:'📚',text:'ほんをよんだり\nしらべたりする',s:[[1,2],[7,1]]}]},
+    { q:'どんな おとなに なりたい？',
+      opts:[{emoji:'🎨',text:'デザイナーや\nりょうりにん',s:[[0,1],[5,2]]},{emoji:'🔬',text:'かがくしゃや\nエンジニア',s:[[1,2],[7,1]]},{emoji:'🤝',text:'せんせいや\nたすけるひと',s:[[6,2],[2,1]]},{emoji:'🏅',text:'せんしゅや\nぼうけんか',s:[[4,2],[7,1]]}]},
+    { q:'すきな かんじは どれ？',
+      opts:[{emoji:'🎪',text:'にぎやかで たのしい',s:[[3,2],[6,1]]},{emoji:'🌙',text:'しずかで ほっこり',s:[[0,1],[1,1],[2,1]]},{emoji:'⚡',text:'どきどき・わくわく',s:[[7,2],[4,1]]},{emoji:'🌈',text:'みんなで いっしょに',s:[[6,1],[3,1],[5,1]]}]},
+  ];
+
+  let quizScores = new Array(8).fill(0);
+  let quizStep   = 0;
+
+  function showChildHub() {
+    const typeIdx = localStorage.getItem('aic_child_type');
+    const childName = localStorage.getItem('aic_child_name') || 'きみ';
+    const hero = document.getElementById('child-hub-hero');
+    const body = document.getElementById('child-hub-body');
+    if (!hero || !body) return;
+
+    if (typeIdx !== null) {
+      const t = CHILD_TYPES[+typeIdx];
+      hero.className = 'child-hub-hero type-' + typeIdx;
+      hero.innerHTML = '<div style="font-size:56px;margin-bottom:8px;">' + t.emoji + '</div>'
+        + '<div style="font-size:22px;font-weight:900;margin-bottom:4px;">' + childName + 'は ' + t.name + '</div>'
+        + '<div style="font-size:13px;opacity:0.9;">' + t.desc + '</div>';
+      body.innerHTML =
+        '<button onclick="startQuiz()" style="width:100%;padding:12px;background:white;border:1.5px solid var(--border);border-radius:12px;font-size:13px;font-weight:700;color:var(--primary);cursor:pointer;font-family:inherit;margin-bottom:16px;">🔄 診断をやり直す</button>'
+        + '<div class="profile-section-label" style="margin-top:0;">🌟 得意な体験ジャンル</div>'
+        + '<div class="chip-group" style="margin-bottom:8px;">'
+        + t.genres.map(g => '<span style="background:white;border:1.5px solid var(--border);border-radius:20px;padding:6px 14px;font-size:13px;font-weight:700;">'+g+'</span>').join('')
+        + '</div>'
+        + '<button onclick="switchTab(\'explore\')" class="btn btn-primary" style="margin-top:16px;">このタイプの体験を探す →</button>';
+    } else {
+      hero.className = 'child-hub-hero';
+      hero.innerHTML = '<div style="font-size:52px;margin-bottom:10px;">🌟</div>'
+        + '<div style="font-size:22px;font-weight:900;margin-bottom:6px;">' + childName + 'のタイプは？</div>'
+        + '<div style="font-size:13px;opacity:0.9;">6つの質問に答えて<br>きみだけのタイプをみつけよう！</div>';
+      body.innerHTML =
+        '<button onclick="startQuiz()" class="btn btn-primary" style="width:100%;font-size:16px;padding:16px;">🎮 タイプ診断をスタート！</button>'
+        + '<div style="margin-top:20px;padding:14px;background:white;border-radius:12px;font-size:13px;color:var(--sub);line-height:1.7;">'
+        + '📌 診断は6問・約2分。子どもが自分で答えてね！</div>';
+    }
+  }
+
+  function startQuiz() {
+    quizScores = new Array(8).fill(0);
+    quizStep   = 0;
+    goTo('screen-diagnosis');
+    renderQuizStep();
+  }
+
+  function renderQuizStep() {
+    const q = QUIZ_QUESTIONS[quizStep];
+    document.getElementById('quiz-step-badge').textContent = (quizStep+1) + '/6';
+    document.getElementById('quiz-progress-bar').style.width = ((quizStep+1)/6*100) + '%';
+    document.getElementById('quiz-question').textContent = q.q;
+    document.getElementById('quiz-options').innerHTML = q.opts.map((o,i) =>
+      '<button class="quiz-opt-btn" onclick="answerQuiz(' + i + ')">'
+      + '<span class="opt-emoji">' + o.emoji + '</span>'
+      + '<span>' + o.text + '</span></button>'
+    ).join('');
+  }
+
+  function answerQuiz(optIdx) {
+    const opt = QUIZ_QUESTIONS[quizStep].opts[optIdx];
+    opt.s.forEach(([typeId, pts]) => { quizScores[typeId] += pts; });
+    quizStep++;
+    if (quizStep < QUIZ_QUESTIONS.length) {
+      // slide animation
+      const area = document.getElementById('quiz-options');
+      area.style.opacity = '0';
+      area.style.transform = 'translateX(30px)';
+      setTimeout(() => {
+        renderQuizStep();
+        area.style.transition = 'all 0.3s';
+        area.style.opacity = '1';
+        area.style.transform = '';
+        setTimeout(() => { area.style.transition = ''; }, 350);
+      }, 180);
+    } else {
+      showQuizResult();
+    }
+  }
+
+  function showQuizResult() {
+    const bestIdx = quizScores.indexOf(Math.max(...quizScores));
+    localStorage.setItem('aic_child_type', bestIdx);
+    const t = CHILD_TYPES[bestIdx];
+
+    // ヒーロー背景をタイプカラーに
+    const hero = document.getElementById('result-hero');
+    hero.style.background = 'linear-gradient(135deg,' + t.color + ',' + t.color2 + ')';
+
+    document.getElementById('result-emoji').textContent = t.emoji;
+    document.getElementById('result-name').textContent  = t.name;
+    document.getElementById('result-desc').textContent  = t.desc;
+
+    // 超能力カード
+    document.getElementById('result-powers').innerHTML = t.powers.map(p =>
+      '<div class="result-power-card">'
+      + '<span class="power-emoji">' + p.e + '</span>'
+      + p.t
+      + '</div>'
+    ).join('');
+
+    // ジャンルチップ（タイプカラー）
+    document.getElementById('result-genres').innerHTML = t.genres.map(g =>
+      '<span class="result-genre-chip" style="background:' + t.color + ';">' + g + '</span>'
+    ).join('');
+
+    goTo('screen-type-result');
+    setTimeout(launchConfetti, 100);
+  }
+
+  function launchConfetti() {
+    const colors = ['#FF6B9D','#4FACFE','#43E97B','#F59E0B','#A855F7','#F97316','#10B981','#6366F1'];
+    for (let i = 0; i < 40; i++) {
+      setTimeout(() => {
+        const el = document.createElement('div');
+        const size = 6 + Math.random() * 8;
+        el.style.cssText = 'position:fixed;top:-12px;left:' + (Math.random()*100) + '%;'
+          + 'width:' + size + 'px;height:' + size + 'px;'
+          + 'border-radius:' + (Math.random()>0.5?'50%':'2px') + ';'
+          + 'background:' + colors[Math.floor(Math.random()*colors.length)] + ';'
+          + 'z-index:9999;pointer-events:none;'
+          + 'animation:confetti-fall ' + (0.9+Math.random()*0.8) + 's ease forwards;';
+        document.body.appendChild(el);
+        setTimeout(() => el.remove(), 2000);
+      }, i * 40);
+    }
+  }
+
+  function onTypeDiagnosisDone() { switchTab('explore'); }
+
+  function showPremiumModal() {
+    const m = document.createElement('div');
+    m.id = 'premium-modal';
+    m.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:300;display:flex;align-items:flex-end;justify-content:center;';
+    m.innerHTML = '<div style="background:white;border-radius:24px 24px 0 0;width:100%;max-width:430px;padding:24px 24px 40px;">'
+      + '<h3 style="font-size:18px;font-weight:900;margin-bottom:16px;">🌱 ファミリープラン</h3>'
+      + '<p style="font-size:14px;color:var(--sub);margin-bottom:20px;line-height:1.7;">月額980円で成長記録・才能レポート・習い事ログなどすべての機能が使えます。</p>'
+      + '<button onclick="startTrial()" style="width:100%;padding:14px;background:linear-gradient(135deg,#4F7FFF,#7B5EA7);color:white;border:none;border-radius:12px;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;margin-bottom:8px;">1ヶ月無料で試す</button>'
+      + '<button onclick="document.getElementById(\'premium-modal\').remove()" style="width:100%;padding:12px;background:none;border:1.5px solid var(--border);border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;">あとで</button>'
+      + '</div>';
+    document.body.appendChild(m);
+  }
+
+  function startTrial() {
+    localStorage.setItem('aic_premium', '1');
+    const m = document.getElementById('premium-modal');
+    if (m) m.remove();
+    goTo('screen-growth-map');
+    // ナビのハイライトを成長記録に更新
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    const bt = document.getElementById('nav-growth');
+    if (bt) bt.classList.add('active');
+  }
+
+  function syncChildName(v) { const el = document.getElementById('child-name'); if(el) el.value = v; }
+  function syncChildAge(v)  { const el = document.getElementById('child-age');  if(el) el.value = v; }
+
+  // ── 会員登録 ──
+  function saveRegistration() {
+    const name  = document.getElementById('reg-child-name').value.trim();
+    const age   = document.getElementById('reg-child-age').value;
+    const email = document.getElementById('reg-email').value.trim();
+    const phone = document.getElementById('reg-phone').value.trim();
+    if (!name) { alert('お子さまのニックネームを入力してください'); return; }
+    if (!age)  { alert('年齢を選択してください'); return; }
+    localStorage.setItem('aic_registered', '1');
+    localStorage.setItem('aic_child_name', name);
+    localStorage.setItem('aic_child_age', age);
+    localStorage.setItem('aic_reg_email', email);
+    localStorage.setItem('aic_reg_phone', phone);
+    goTo('screen-welcome');
+  }
+
+  function startSearch() {
+    if (!localStorage.getItem('aic_registered')) {
+      goTo('screen-register');
+      return;
+    }
+    goTo('screen-profile');
+  }
+
+  // ── 子ども情報（親目線） ──
+  function saveChildProfile() {
+    const name    = document.getElementById('cp-child-name').value.trim();
+    const age     = document.getElementById('cp-child-age').value;
+    const traits  = [...document.querySelectorAll('#cp-traits-chips .chip.selected')]
+                      .map(el => el.textContent.trim().replace(/^\S+\s/, ''));
+    const edu     = [...document.querySelectorAll('#cp-policy-chips .chip.selected')]
+                      .map(el => el.textContent.trim().replace(/^\S+\s/, ''));
+    const style   = document.querySelector('#cp-style-chips .chip.selected')?.textContent.trim().replace(/^\S+\s/, '') || '';
+    const group   = document.querySelector('#cp-group-chips .chip.selected')?.textContent.trim().replace(/^\S+\s/, '') || '';
+    const genres  = [...document.querySelectorAll('#cp-genre-chips .chip.selected')]
+                      .map(el => el.textContent.trim().replace(/^\S+\s/, ''));
+    if (name) localStorage.setItem('aic_child_name', name);
+    if (age)  localStorage.setItem('aic_child_age', age);
+    const profile = { traits, education: edu, style, groupType: group, genres };
+    localStorage.setItem('aic_child_profile', JSON.stringify(profile));
+    showToast('保存しました！');
+    goTo('screen-settings');
+  }
+
+  function loadChildProfileForm() {
+    const name = localStorage.getItem('aic_child_name') || '';
+    const age  = localStorage.getItem('aic_child_age')  || '';
+    const prof = JSON.parse(localStorage.getItem('aic_child_profile') || '{}');
+    const nameEl = document.getElementById('cp-child-name');
+    const ageEl  = document.getElementById('cp-child-age');
+    if (nameEl) nameEl.value = name;
+    if (ageEl)  ageEl.value  = age;
+    // チップを復元
+    restoreChips('cp-traits-chips', prof.traits || []);
+    restoreChips('cp-policy-chips', prof.education || []);
+    restoreChips('cp-genre-chips', prof.genres || []);
+    if (prof.style) {
+      document.querySelectorAll('#cp-style-chips .chip').forEach(c => {
+        c.classList.toggle('selected', c.textContent.includes(prof.style.slice(0,5)));
+      });
+    }
+    if (prof.groupType) {
+      document.querySelectorAll('#cp-group-chips .chip').forEach(c => {
+        c.classList.toggle('selected', c.textContent.includes(prof.groupType.slice(0,4)));
+      });
+    }
+  }
+
+  function restoreChips(groupId, values) {
+    document.querySelectorAll('#' + groupId + ' .chip').forEach(c => {
+      const label = c.textContent.trim().replace(/^\S+\s/, '');
+      c.classList.toggle('selected', values.includes(label));
+    });
+  }
+
+  // ── 設定画面レンダリング ──
+  function renderSettings() {
+    const email = localStorage.getItem('aic_reg_email') || '—';
+    const phone = localStorage.getItem('aic_reg_phone') || '—';
+    const name  = localStorage.getItem('aic_child_name') || '未設定';
+    const age   = localStorage.getItem('aic_child_age')  || '';
+    const prof  = JSON.parse(localStorage.getItem('aic_child_profile') || '{}');
+    const typeId = parseInt(localStorage.getItem('aic_child_type') ?? '-1');
+    const typeInfo = typeId >= 0 ? CHILD_TYPES[typeId] : null;
+    const emailEl  = document.getElementById('settings-email-disp');
+    const phoneEl  = document.getElementById('settings-phone-disp');
+    const summaryEl = document.getElementById('settings-child-summary');
+    const typeEl   = document.getElementById('settings-child-type-disp');
+    const emojiEl  = document.getElementById('settings-child-emoji');
+    const traitsEl = document.getElementById('settings-child-traits-disp');
+    if (emailEl)  emailEl.textContent  = email;
+    if (phoneEl)  phoneEl.textContent  = phone;
+    if (summaryEl) summaryEl.textContent = `${name}${age ? '・' + age : ''}`;
+    if (typeEl)   typeEl.textContent   = typeInfo ? `診断タイプ：${typeInfo.name}` : '診断タイプ：未診断';
+    if (emojiEl)  emojiEl.textContent  = typeInfo ? typeInfo.emoji : '👶';
+    if (traitsEl) traitsEl.textContent = prof.traits?.length
+      ? '性格・特徴：' + prof.traits.slice(0,3).join(' / ')
+      : '性格・特徴：未設定';
+  }
+
+  // ── 予約画面バナー ──
+  function renderProfileBanner() {
+    const name   = localStorage.getItem('aic_child_name') || 'お子さま';
+    const typeId = parseInt(localStorage.getItem('aic_child_type') ?? '-1');
+    const typeInfo = typeId >= 0 ? CHILD_TYPES[typeId] : null;
+    const emojiEl = document.getElementById('profile-banner-emoji');
+    const nameEl  = document.getElementById('profile-banner-name');
+    const typeEl  = document.getElementById('profile-banner-type');
+    if (emojiEl) emojiEl.textContent = typeInfo ? typeInfo.emoji : '👶';
+    if (nameEl)  nameEl.textContent  = `${name}の情報を参照してAIが提案します`;
+    if (typeEl)  typeEl.textContent  = typeInfo
+      ? `${typeInfo.name}タイプ・興味関心をもとに施設を絞り込みます`
+      : '「子ども情報を編集」で精度アップ↑';
+  }
+
+  // ── 初回起動チェック ──
+  function initApp() {
+    if (!localStorage.getItem('aic_registered')) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById('screen-register').classList.add('active');
+      document.getElementById('bottom-nav').classList.add('hidden');
+    }
+    injectDemoDataIfEmpty();
+  }
+  initApp();
+
+  function resetDemo() {
+    ['aic_experience_log','aic_child_name','aic_child_age','aic_child_type','aic_demo_injected',
+     'aic_premium','aic_lvl_seen','aic_registered','aic_reg_email','aic_reg_phone','aic_child_profile'].forEach(k => localStorage.removeItem(k));
+    alert('デモデータをリセットしました。ページを再読み込みしてください。');
+  }
+
   // ── ローディング + API fetch ──
   function startLoadingAnimation() {
     seenIds.clear();
     selectedFacility = null;
-    document.getElementById('confirm-btn').disabled = true;
-    document.getElementById('confirm-btn').style.opacity = '0.45';
+    swipeQueue = [];
+    likedFacilities = [];
 
     const steps    = [{id:'ls-1',delay:400,dur:800},{id:'ls-2',delay:1200,dur:600},{id:'ls-3',delay:1800,dur:700},{id:'ls-4',delay:2500,dur:500}];
     const percents = [20, 45, 75, 95];
@@ -1800,18 +3092,21 @@
       }, s.delay);
     });
 
-    // プロファイルをAPIに渡す
-    const genreMap = {'アート・工作':'アート','農業・自然体験':'農業','科学・プログラミング':'科学','音楽・演劇':'音楽','スポーツ体験':'スポーツ','料理・食育':'料理'};
-    const genres = [...document.querySelectorAll('#genre-chips .chip.selected')]
-      .map(el => genreMap[el.textContent.trim().replace(/^\S+\s/,'')] || '');
-    const personality = [...document.querySelectorAll('#personality-chips .chip.selected')]
-      .map(el => el.textContent.trim().replace(/^\S+\s/,'')).join(',');
+    // プロファイルをAPIに渡す（LocalStorageから読む）
+    const childProf = JSON.parse(localStorage.getItem('aic_child_profile') || '{}');
+    const genreMap  = {'アート・工作':'アート','農業・自然体験':'農業','科学・プログラミング':'科学','音楽・演劇':'音楽','スポーツ体験':'スポーツ','料理・食育':'料理'};
+    const genres    = (childProf.genres || []).map(g => genreMap[g] || g);
     const params = new URLSearchParams({
-      genres:      genres.filter(Boolean).join(','),
-      name:        document.getElementById('child-name').value || 'お子さま',
-      age:         document.getElementById('child-age').value  || '',
-      personality: personality,
-      policy:      [...document.querySelectorAll('#policy-chips .chip.selected')].map(el => el.textContent.trim().replace(/^\S+\s/, '')).join(',') || '',
+      name:        localStorage.getItem('aic_child_name') || 'お子さま',
+      age:         localStorage.getItem('aic_child_age')  || '',
+      personality: (childProf.traits    || []).join(','),
+      policy:      (childProf.education || []).join(','),
+      genres:      genres.join(','),
+      join_style:  childProf.style     || '',
+      group_type:  childProf.groupType || '',
+      mood:        document.querySelector('#mood-chips .chip.selected')?.textContent.trim() || '',
+      budget:      document.querySelector('#budget-chips .chip.selected')?.textContent.trim() || '',
+      date:        document.getElementById('preferred-date').value || '',
       limit:       '3',
     });
     currentParams = params.toString();
