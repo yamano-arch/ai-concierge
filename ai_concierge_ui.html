@@ -1358,36 +1358,23 @@
         </div>
       </div>
 
-      <div class="payment-section">
-        <h4>🔐 お支払い（あなたが操作する部分はここだけ）</h4>
-        <p>セキュリティのため、カード番号はAIが保持していません。セキュリティコードのみご入力ください。</p>
-        <div class="field">
-          <label>クレジットカード番号</label>
-          <input type="text" value="**** **** **** 4242" readonly style="color:#9CA3AF;background:#F9FAFB;">
+      <!-- 予約の流れ -->
+      <div style="background:#EEF2FF;border:1.5px solid #C7D2FE;border-radius:12px;padding:14px;margin-bottom:16px;">
+        <div style="font-size:12px;font-weight:800;color:#4338CA;margin-bottom:8px;">📋 予約の流れ</div>
+        <div style="font-size:12px;color:#3730A3;line-height:1.9;">
+          ① ボタンを押すと予約情報がコピーされます<br>
+          ② 施設の予約ページが自動で開きます<br>
+          ③ ブックマークの「AI自動入力」をタップで入力完了<br>
+          ④ 決済情報だけ手入力して送信してください
         </div>
-        <div class="cvv-row">
-          <div class="field">
-            <label>セキュリティコード（CVV）</label>
-            <input type="tel" maxlength="3" placeholder="●●●" id="cvv-input" oninput="checkCVV(this)">
-          </div>
-          <div style="margin-bottom:16px;font-size:22px;">🔒</div>
-        </div>
-        <div class="price-row">
-          <span class="total-label">合計金額</span>
-          <span class="total">¥7,000</span>
-        </div>
-      </div>
-
-      <div style="background:#F0FDF4;border:1.5px solid #86EFAC;border-radius:12px;padding:14px;margin-bottom:20px;font-size:13px;color:#166534;line-height:1.6;">
-        ✅ この施設は教育専門家によって安全性・教育的価値が確認済みです。
       </div>
 
       <div style="height:80px;"></div>
     </div>
 
     <div class="sticky-footer">
-      <button class="btn btn-green" id="pay-btn" onclick="onPaymentConfirmed()" disabled style="opacity:0.45;">
-        🔐 予約を確定する（¥7,000）
+      <button class="btn btn-green" id="pay-btn" onclick="openBookingPage()">
+        🔗 予約サイトへ進む（情報をコピー）
       </button>
       <button class="btn btn-ghost" onclick="goTo('screen-proposals')">← プラン選択に戻る</button>
     </div>
@@ -1635,6 +1622,51 @@
 
         <div style="height:20px;"></div>
       </div>
+    </div>
+  </div>
+
+  <!-- ════ ブックマークレット案内モーダル ════ -->
+  <div id="bookmarklet-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:500;align-items:flex-end;justify-content:center;">
+    <div style="background:white;border-radius:24px 24px 0 0;width:100%;max-width:430px;padding:24px 24px 40px;max-height:85vh;overflow-y:auto;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+        <div style="font-size:16px;font-weight:900;">🤖 AI自動入力の準備</div>
+        <button onclick="closeBookmarkletModal()" style="background:none;border:none;font-size:22px;cursor:pointer;padding:4px;">×</button>
+      </div>
+
+      <div style="background:#D1FAE5;border-radius:12px;padding:12px 14px;margin-bottom:16px;">
+        <div style="font-size:13px;font-weight:800;color:#065F46;margin-bottom:4px;">✅ 予約情報をコピーしました！</div>
+        <div style="font-size:12px;color:#047857;line-height:1.7;">施設の予約ページが開いたら、ブラウザのブックマークから <strong>「AI自動入力」</strong> をタップしてください。</div>
+      </div>
+
+      <!-- ブックマークレットリンク -->
+      <div style="background:#F8F9FF;border:1.5px solid #C7D2FE;border-radius:12px;padding:14px;margin-bottom:16px;">
+        <div style="font-size:12px;font-weight:800;color:#4338CA;margin-bottom:8px;">🔖 ブックマークに追加する</div>
+        <a id="bookmarklet-link" href="#" style="display:block;background:#4F7FFF;color:white;text-align:center;padding:12px;border-radius:10px;font-size:14px;font-weight:800;text-decoration:none;margin-bottom:8px;">AI自動入力（長押しでブックマーク追加）</a>
+        <div style="font-size:11px;color:#6B7280;text-align:center;">※クリックではなく長押し→「ブックマークに追加」</div>
+      </div>
+
+      <!-- タブ切り替え: iOS / Android -->
+      <div style="display:flex;gap:8px;margin-bottom:12px;">
+        <button onclick="switchBmTab('ios')" id="bm-tab-ios" style="flex:1;padding:8px;background:#4F7FFF;color:white;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">🍎 iOS Safari</button>
+        <button onclick="switchBmTab('android')" id="bm-tab-android" style="flex:1;padding:8px;background:#E5E7EB;color:#374151;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">🤖 Android Chrome</button>
+      </div>
+
+      <div id="bm-ios" style="font-size:12px;color:#374151;line-height:1.9;">
+        <strong>iOS Safari の手順：</strong><br>
+        ① 上の青いリンクを <strong>長押し</strong><br>
+        ② 「ブックマークを追加」をタップ<br>
+        ③ 名前を「AI自動入力」にして保存<br>
+        ④ 施設の予約ページでブックマークをタップ
+      </div>
+      <div id="bm-android" style="display:none;font-size:12px;color:#374151;line-height:1.9;">
+        <strong>Android Chrome の手順：</strong><br>
+        ① 上の青いリンクを <strong>長押し</strong><br>
+        ② 「リンクをコピー」してアドレスバーに貼り付け<br>
+        ③ ブックマーク（☆）をタップして保存<br>
+        ④ 施設の予約ページでブックマークをタップ
+      </div>
+
+      <button onclick="closeBookmarkletModal()" style="width:100%;margin-top:20px;padding:14px;background:var(--primary);color:white;border:none;border-radius:12px;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;">OK、予約サイトで入力する →</button>
     </div>
   </div>
 
@@ -2879,8 +2911,74 @@
   }
   function checkCVV(input) {
     const btn = document.getElementById('pay-btn');
+    if (!btn) return;
     const ok  = input.value.length === 3;
     btn.disabled = !ok; btn.style.opacity = ok ? '1' : '0.45';
+  }
+
+  // ── 予約情報JSON生成 ──
+  function buildReservationJSON() {
+    const parentName = localStorage.getItem('aic_parent_name') || '';
+    const tel        = localStorage.getItem('aic_reg_phone')   || '';
+    const email      = localStorage.getItem('aic_reg_email')   || '';
+    const childAge   = localStorage.getItem('aic_child_age')   || '';
+    const address    = localStorage.getItem('aic_address')     || '';
+    const prof       = JSON.parse(localStorage.getItem('aic_child_profile') || '{}');
+    const telClean   = tel.replace(/[-ー\s]/g, '');
+    const telFmt     = telClean.length === 11
+      ? telClean.slice(0,3) + '-' + telClean.slice(3,7) + '-' + telClean.slice(7)
+      : tel;
+    return {
+      name:         parentName,
+      nameKana:     '',
+      tel:          telClean,
+      telFormatted: telFmt,
+      email:        email,
+      adults:       1,
+      children:     1,
+      childAge:     childAge,
+      address:      address,
+      notes:        (prof.traits || []).join('、') || 'アレルギーなし',
+    };
+  }
+
+  // ── ブックマークレット本体（minified） ──
+  const BOOKMARKLET_SRC = `javascript:(function(){'use strict';try{navigator.clipboard.readText().then(function(t){var d;try{d=JSON.parse(t)}catch(e){alert('こどもコンシェルジュ: 対応するデータが見つかりませんでした。予約画面から「予約サイトへ進む」ボタンを押してからお試しください。');return}if(!d||(!d.name&&!d.email&&!d.tel)){alert('こどもコンシェルジュ: 予約情報が見つかりませんでした。');return}var PP=/card|カード|cvv|cvc|セキュリティ|有効期限|expir|番号/i;function fill(el,v){try{var s=Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype,'value');if(s&&el.tagName==='INPUT')s.set.call(el,v);else el.value=v}catch(e){el.value=v}el.dispatchEvent(new Event('input',{bubbles:true}));el.dispatchEvent(new Event('change',{bubbles:true}))}function lbl(el){var p=[];['name','id','placeholder','autocomplete'].forEach(function(a){if(el.getAttribute(a))p.push(el.getAttribute(a))});if(el.id){var L=document.querySelector('label[for="'+el.id+'"]');if(L)p.push(L.textContent)}var par=el.parentElement,dep=0;while(par&&dep<4){if(/LABEL|TD|TH|DIV/.test(par.tagName)){var cl=par.cloneNode(true);cl.querySelectorAll('input,select,textarea').forEach(function(c){c.remove()});var tx=cl.textContent.trim();if(tx)p.push(tx)}par=par.parentElement;dep++}return p.join(' ')}var fn=0,mn=0;document.querySelectorAll('input:not([type=hidden]):not([type=submit]):not([type=button]):not([type=checkbox]):not([type=radio]),select,textarea').forEach(function(el){var cm=lbl(el);if(el.type==='password'||PP.test(cm)){el.style.outline='3px solid #FFD700';el.setAttribute('title','ここは手入力してください');mn++;return}var v=null;if(/氏名|お名前|フルネーム|full.?name/i.test(cm)&&el.type!=='email'&&!PP.test(cm))v=d.name;else if(/フリガナ|ふりがな|かな|kana|yomi/i.test(cm))v=d.nameKana||d.name;else if(/電話|tel|phone|携帯/i.test(cm)){v=(el.maxLength&&el.maxLength>11)||/[-ー]/.test(el.placeholder||'')?d.telFormatted:d.tel}else if(/メール|mail|email/i.test(cm)||el.type==='email')v=d.email;else if(/大人|おとな|adult/i.test(cm))v=String(d.adults);else if(/子供|子ども|こども|child|kid/i.test(cm))v=String(d.children);else if(/備考|アレルギー|note|remark|特記/i.test(cm))v=d.notes;if(v!==null&&v!==undefined&&v!==''){fill(el,v);fn++}});var tk=document.createElement('div');tk.style.cssText='position:fixed;top:16px;left:50%;transform:translateX(-50%);background:#1a1a2e;color:#fff;padding:12px 20px;border-radius:10px;font-size:14px;font-weight:700;z-index:99999;box-shadow:0 4px 20px rgba(0,0,0,.3);text-align:center;line-height:1.6';tk.innerHTML='✅ '+fn+'件 自動入力しました<br><span style="font-size:12px;opacity:.8">⚠️ '+mn+'件は手入力が必要です（黄枠）</span>';document.body.appendChild(tk);setTimeout(function(){tk.remove()},3500)}).catch(function(e){if(e.name==='NotAllowedError')alert('クリップボードへのアクセスが拒否されました。ブラウザの設定でクリップボードの許可をONにしてください。');else alert('クリップボード読み取りエラー: '+e.message)})}catch(e){alert('自動入力エラー: '+e.message)}})();`;
+
+  // ── 予約ページを開く ──
+  async function openBookingPage() {
+    const json = buildReservationJSON();
+    const url  = selectedFacility?.website || 'https://www.google.com/search?q=' + encodeURIComponent((selectedFacility?.name || '') + ' 予約');
+
+    try {
+      await navigator.clipboard.writeText(JSON.stringify(json, null, 2));
+    } catch(e) {
+      console.warn('clipboard write failed:', e);
+    }
+
+    window.open(url, '_blank');
+    showBookmarkletModal();
+  }
+
+  function showBookmarkletModal() {
+    const el = document.getElementById('bookmarklet-modal');
+    const link = document.getElementById('bookmarklet-link');
+    if (link) link.href = BOOKMARKLET_SRC;
+    el.style.display = 'flex';
+  }
+
+  function closeBookmarkletModal() {
+    document.getElementById('bookmarklet-modal').style.display = 'none';
+    onPaymentConfirmed();
+  }
+
+  function switchBmTab(tab) {
+    document.getElementById('bm-ios').style.display     = tab === 'ios'     ? 'block' : 'none';
+    document.getElementById('bm-android').style.display = tab === 'android' ? 'block' : 'none';
+    document.getElementById('bm-tab-ios').style.background     = tab === 'ios'     ? '#4F7FFF' : '#E5E7EB';
+    document.getElementById('bm-tab-ios').style.color          = tab === 'ios'     ? 'white'   : '#374151';
+    document.getElementById('bm-tab-android').style.background = tab === 'android' ? '#4F7FFF' : '#E5E7EB';
+    document.getElementById('bm-tab-android').style.color      = tab === 'android' ? 'white'   : '#374151';
   }
 
   // ── 星評価 ──
