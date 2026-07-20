@@ -1100,14 +1100,9 @@
         </select>
       </div>
 
-      <div class="field" style="margin-bottom:16px;">
-        <label style="font-size:12px;font-weight:700;color:#666;margin-bottom:6px;display:block;">保護者のメールアドレス</label>
-        <input type="email" id="reg-email" placeholder="example@email.com" style="width:100%;padding:12px 14px;border:1.5px solid #E2E8F0;border-radius:12px;font-size:15px;font-family:inherit;box-sizing:border-box;">
-      </div>
-
       <div class="field" style="margin-bottom:28px;">
-        <label style="font-size:12px;font-weight:700;color:#666;margin-bottom:6px;display:block;">電話番号</label>
-        <input type="tel" id="reg-phone" placeholder="090-0000-0000" style="width:100%;padding:12px 14px;border:1.5px solid #E2E8F0;border-radius:12px;font-size:15px;font-family:inherit;box-sizing:border-box;">
+        <label style="font-size:12px;font-weight:700;color:#666;margin-bottom:6px;display:block;">お住まいの市区町村</label>
+        <input type="text" id="reg-address" placeholder="例：東京都世田谷区" style="width:100%;padding:12px 14px;border:1.5px solid #E2E8F0;border-radius:12px;font-size:15px;font-family:inherit;box-sizing:border-box;">
       </div>
 
       <button onclick="saveRegistration()" style="width:100%;padding:15px;background:linear-gradient(90deg,#4F7FFF,#7B5EA7);color:white;border:none;border-radius:14px;font-size:16px;font-weight:900;cursor:pointer;font-family:inherit;">はじめる →</button>
@@ -1339,15 +1334,15 @@
         <h4>🤖 AIが自動入力した情報</h4>
         <div class="fill-row">
           <span class="label">参加者氏名</span>
-          <span class="value">山田 花子 <span class="ai-badge">AI入力済</span></span>
+          <span class="value"><span id="booking-fill-name">—</span> <span class="ai-badge">AI入力済</span></span>
         </div>
         <div class="fill-row">
           <span class="label">連絡先</span>
-          <span class="value">090-XXXX-XXXX <span class="ai-badge">AI入力済</span></span>
+          <span class="value"><span id="booking-fill-phone">—</span> <span class="ai-badge">AI入力済</span></span>
         </div>
         <div class="fill-row">
           <span class="label">メールアドレス</span>
-          <span class="value">h.yamada@... <span class="ai-badge">AI入力済</span></span>
+          <span class="value"><span id="booking-fill-email">—</span> <span class="ai-badge">AI入力済</span></span>
         </div>
         <div class="fill-row">
           <span class="label">参加人数</span>
@@ -1743,24 +1738,24 @@
         <button onclick="showPremiumModal()" style="width:100%;padding:12px;background:white;color:#4F7FFF;border:none;border-radius:10px;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;">¥980/月 で始める →</button>
       </div>
 
-      <!-- アカウント情報 -->
-      <div class="profile-section-label">📱 アカウント情報</div>
+      <!-- 予約・連絡先情報 -->
+      <div class="profile-section-label">📋 予約・連絡先情報</div>
       <div class="form-section">
         <div style="background:white;border-radius:12px;padding:16px;box-shadow:var(--shadow);">
-          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
-            <span style="font-size:20px;">📧</span>
-            <div>
-              <div style="font-size:11px;color:var(--sub);font-weight:600;">メールアドレス</div>
-              <div style="font-size:13px;font-weight:700;" id="settings-email-disp">—</div>
-            </div>
+          <p style="font-size:11px;color:var(--sub);margin:0 0 14px;">施設予約時に自動入力されます。</p>
+          <div style="margin-bottom:12px;">
+            <label style="font-size:11px;font-weight:700;color:var(--sub);display:block;margin-bottom:4px;">保護者のお名前</label>
+            <input type="text" id="settings-parent-name" placeholder="例：山田 花子" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;font-family:inherit;box-sizing:border-box;">
           </div>
-          <div style="display:flex;align-items:center;gap:10px;">
-            <span style="font-size:20px;">📞</span>
-            <div>
-              <div style="font-size:11px;color:var(--sub);font-weight:600;">電話番号</div>
-              <div style="font-size:13px;font-weight:700;" id="settings-phone-disp">—</div>
-            </div>
+          <div style="margin-bottom:12px;">
+            <label style="font-size:11px;font-weight:700;color:var(--sub);display:block;margin-bottom:4px;">メールアドレス</label>
+            <input type="email" id="settings-email-input" placeholder="example@email.com" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;font-family:inherit;box-sizing:border-box;">
           </div>
+          <div style="margin-bottom:16px;">
+            <label style="font-size:11px;font-weight:700;color:var(--sub);display:block;margin-bottom:4px;">電話番号</label>
+            <input type="tel" id="settings-phone-input" placeholder="090-0000-0000" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;font-family:inherit;box-sizing:border-box;">
+          </div>
+          <button onclick="saveContactInfo()" style="width:100%;padding:12px;background:var(--primary);color:white;border:none;border-radius:10px;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;">保存する</button>
         </div>
       </div>
 
@@ -2713,6 +2708,15 @@
       document.getElementById('booking-address').textContent = '📍 ' + (f.address || '');
       document.getElementById('booking-website-link').href   = f.website || '#';
     }
+    const pName = localStorage.getItem('aic_parent_name') || '—';
+    const phone = localStorage.getItem('aic_reg_phone')   || '—';
+    const email = localStorage.getItem('aic_reg_email')   || '—';
+    const fnEl = document.getElementById('booking-fill-name');
+    const fpEl = document.getElementById('booking-fill-phone');
+    const feEl = document.getElementById('booking-fill-email');
+    if (fnEl) fnEl.textContent = pName;
+    if (fpEl) fpEl.textContent = phone;
+    if (feEl) feEl.textContent = email;
     goTo('screen-booking');
   }
   function checkCVV(input) {
@@ -2937,17 +2941,15 @@
 
   // ── 会員登録 ──
   function saveRegistration() {
-    const name  = document.getElementById('reg-child-name').value.trim();
-    const age   = document.getElementById('reg-child-age').value;
-    const email = document.getElementById('reg-email').value.trim();
-    const phone = document.getElementById('reg-phone').value.trim();
+    const name    = document.getElementById('reg-child-name').value.trim();
+    const age     = document.getElementById('reg-child-age').value;
+    const address = document.getElementById('reg-address').value.trim();
     if (!name) { alert('お子さまのニックネームを入力してください'); return; }
     if (!age)  { alert('年齢を選択してください'); return; }
     localStorage.setItem('aic_registered', '1');
     localStorage.setItem('aic_child_name', name);
     localStorage.setItem('aic_child_age', age);
-    localStorage.setItem('aic_reg_email', email);
-    localStorage.setItem('aic_reg_phone', phone);
+    localStorage.setItem('aic_address', address);
     goTo('screen-welcome');
   }
 
@@ -3011,27 +3013,37 @@
 
   // ── 設定画面レンダリング ──
   function renderSettings() {
-    const email = localStorage.getItem('aic_reg_email') || '—';
-    const phone = localStorage.getItem('aic_reg_phone') || '—';
     const name  = localStorage.getItem('aic_child_name') || '未設定';
     const age   = localStorage.getItem('aic_child_age')  || '';
     const prof  = JSON.parse(localStorage.getItem('aic_child_profile') || '{}');
     const typeId = parseInt(localStorage.getItem('aic_child_type') ?? '-1');
     const typeInfo = typeId >= 0 ? CHILD_TYPES[typeId] : null;
-    const emailEl  = document.getElementById('settings-email-disp');
-    const phoneEl  = document.getElementById('settings-phone-disp');
     const summaryEl = document.getElementById('settings-child-summary');
     const typeEl   = document.getElementById('settings-child-type-disp');
     const emojiEl  = document.getElementById('settings-child-emoji');
     const traitsEl = document.getElementById('settings-child-traits-disp');
-    if (emailEl)  emailEl.textContent  = email;
-    if (phoneEl)  phoneEl.textContent  = phone;
     if (summaryEl) summaryEl.textContent = `${name}${age ? '・' + age : ''}`;
     if (typeEl)   typeEl.textContent   = typeInfo ? `診断タイプ：${typeInfo.name}` : '診断タイプ：未診断';
     if (emojiEl)  emojiEl.textContent  = typeInfo ? typeInfo.emoji : '👶';
     if (traitsEl) traitsEl.textContent = prof.traits?.length
       ? '性格・特徴：' + prof.traits.slice(0,3).join(' / ')
       : '性格・特徴：未設定';
+    const pNameEl = document.getElementById('settings-parent-name');
+    const emailEl = document.getElementById('settings-email-input');
+    const phoneEl = document.getElementById('settings-phone-input');
+    if (pNameEl) pNameEl.value = localStorage.getItem('aic_parent_name') || '';
+    if (emailEl) emailEl.value = localStorage.getItem('aic_reg_email')   || '';
+    if (phoneEl) phoneEl.value = localStorage.getItem('aic_reg_phone')   || '';
+  }
+
+  function saveContactInfo() {
+    const pName = document.getElementById('settings-parent-name')?.value.trim() || '';
+    const email = document.getElementById('settings-email-input')?.value.trim() || '';
+    const phone = document.getElementById('settings-phone-input')?.value.trim() || '';
+    localStorage.setItem('aic_parent_name', pName);
+    localStorage.setItem('aic_reg_email', email);
+    localStorage.setItem('aic_reg_phone', phone);
+    alert('保存しました');
   }
 
   // ── 予約画面バナー ──
@@ -3062,7 +3074,8 @@
 
   function resetDemo() {
     ['aic_experience_log','aic_child_name','aic_child_age','aic_child_type','aic_demo_injected',
-     'aic_premium','aic_lvl_seen','aic_registered','aic_reg_email','aic_reg_phone','aic_child_profile'].forEach(k => localStorage.removeItem(k));
+     'aic_premium','aic_lvl_seen','aic_registered','aic_reg_email','aic_reg_phone',
+     'aic_parent_name','aic_address','aic_child_profile'].forEach(k => localStorage.removeItem(k));
     alert('デモデータをリセットしました。ページを再読み込みしてください。');
   }
 
