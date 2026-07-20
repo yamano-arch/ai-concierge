@@ -1174,7 +1174,7 @@
           <div style="font-size:12px;font-weight:800;color:#333;" id="profile-banner-name">お子さまの情報を参照中</div>
           <div style="font-size:11px;color:var(--sub);" id="profile-banner-type">設定から子ども情報を詳しく入力するとAIの精度が上がります</div>
         </div>
-        <button onclick="goTo('screen-child-profile')" style="font-size:11px;font-weight:700;color:#4F7FFF;background:none;border:1.5px solid #4F7FFF;border-radius:8px;padding:5px 10px;cursor:pointer;font-family:inherit;white-space:nowrap;">編集 →</button>
+        <button onclick="childProfileReturnScreen='screen-profile';goTo('screen-child-profile')" style="font-size:11px;font-weight:700;color:#4F7FFF;background:none;border:1.5px solid #4F7FFF;border-radius:8px;padding:5px 10px;cursor:pointer;font-family:inherit;white-space:nowrap;">編集 →</button>
       </div>
 
       <!-- 今日の気分（必須） -->
@@ -1776,7 +1776,7 @@
           </div>
           <div style="font-size:11px;color:var(--sub);" id="settings-child-traits-disp">性格・特徴：未設定</div>
         </div>
-        <button onclick="goTo('screen-child-profile')" style="width:100%;padding:12px;background:white;border:1.5px solid #4F7FFF;border-radius:10px;color:#4F7FFF;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;">✏️ 子ども情報を編集する</button>
+        <button onclick="childProfileReturnScreen='screen-settings';goTo('screen-child-profile')" style="width:100%;padding:12px;background:white;border:1.5px solid #4F7FFF;border-radius:10px;color:#4F7FFF;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;">✏️ 子ども情報を編集する</button>
       </div>
 
       <div class="profile-section-label">🛠️ デモ設定</div>
@@ -1793,7 +1793,7 @@
   ════════════════════════════════ -->
   <div id="screen-child-profile" class="screen" style="background:var(--bg);">
     <div class="header">
-      <button onclick="goTo('screen-settings')" style="background:none;border:none;font-size:20px;cursor:pointer;padding:4px 8px;">←</button>
+      <button onclick="goTo(childProfileReturnScreen)" style="background:none;border:none;font-size:20px;cursor:pointer;padding:4px 8px;">←</button>
       <div style="font-weight:800;font-size:15px;">お子さまの情報</div>
       <div style="width:40px;"></div>
     </div>
@@ -1913,7 +1913,8 @@
   let currentParams     = '';
   let drawerIdx         = -1;
   let currentStarRating = 0;
-  let mapReturnScreen   = 'screen-welcome';
+  let mapReturnScreen         = 'screen-welcome';
+  let childProfileReturnScreen = 'screen-settings';
   // スワイプUI
   let swipeQueue        = [];
   let likedFacilities   = [];
@@ -3134,7 +3135,7 @@
     if (age)  localStorage.setItem('aic_child_age', age);
     const profile = { traits, education: edu, style, groupType: group, genres };
     localStorage.setItem('aic_child_profile', JSON.stringify(profile));
-    goTo('screen-settings');
+    goTo(childProfileReturnScreen);
   }
 
   function loadChildProfileForm() {
