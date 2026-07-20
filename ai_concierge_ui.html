@@ -883,6 +883,10 @@
   .lu-cat   { font-size:13px; opacity:0.82; margin-bottom:3px; }
   .lu-lbl   { font-size:21px; font-weight:800; margin-bottom:10px; }
   .lu-stars { font-size:20px; letter-spacing:7px; }
+  @keyframes confettiFall {
+    0%   { transform:translateY(0) rotate(0deg); opacity:1; }
+    100% { transform:translateY(100vh) rotate(720deg); opacity:0; }
+  }
 
   /* スキル獲得オーバーレイ */
   .ach-overlay {
@@ -1536,96 +1540,96 @@
        SCREEN 9: 成長マップ
   ════════════════════════════════ -->
   <div id="screen-growth-map" class="screen">
-    <!-- ヘッダー (グラデ背景) -->
+    <!-- ヘッダー -->
     <div class="header" style="background:linear-gradient(135deg,#4F7FFF,#7B5EA7);color:white;">
-      <div class="logo" style="color:white;font-size:16px;">成長記録</div>
+      <div class="logo" style="color:white;font-size:16px;">⚔️ 成長冒険記録</div>
       <span style="background:rgba(255,255,255,0.22);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:800;color:white;letter-spacing:0.05em;">✨ プレミアム</span>
     </div>
 
     <div style="flex:1;overflow-y:auto;">
-      <!-- プレミアムヒーロー -->
-      <div style="background:linear-gradient(135deg,#4F7FFF,#7B5EA7);padding:16px 20px 24px;">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:18px;">
-          <div>
-            <div id="growth-hero-name" style="font-size:20px;font-weight:900;color:white;margin-bottom:4px;">さくら の成長記録</div>
-            <div id="growth-hero-type" style="font-size:13px;color:rgba(255,255,255,0.85);font-weight:600;">🎨 アーティストタイプ</div>
+      <!-- RPGヒーロー -->
+      <div style="background:linear-gradient(135deg,#4F7FFF,#7B5EA7);padding:16px 20px 28px;">
+        <div id="growth-hero-name" style="font-size:20px;font-weight:900;color:white;margin-bottom:2px;">さくら の冒険記録</div>
+        <div id="growth-hero-type" style="font-size:13px;color:rgba(255,255,255,0.85);font-weight:600;margin-bottom:14px;">🎨 アーティストタイプ</div>
+
+        <!-- レベルカード -->
+        <div style="background:rgba(255,255,255,0.15);border-radius:16px;padding:14px 16px;margin-bottom:12px;border:1px solid rgba(255,255,255,0.25);">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+            <div>
+              <span id="gph-level-icon" style="font-size:22px;">🌱</span>
+              <span id="gph-level-num" style="font-size:22px;font-weight:900;color:white;margin-left:4px;">Lv.1</span>
+              <div id="gph-level-title" style="font-size:12px;color:rgba(255,255,255,0.9);font-weight:700;margin-top:2px;">新米たんけん家</div>
+            </div>
+            <div style="text-align:right;">
+              <div id="gph-xp-text" style="font-size:12px;color:rgba(255,255,255,0.85);font-weight:700;">0 / 100 XP</div>
+              <div style="font-size:10px;color:rgba(255,255,255,0.6);margin-top:2px;">次のレベルまで</div>
+            </div>
           </div>
-          <div id="growth-hero-level" style="background:rgba(255,255,255,0.22);border-radius:20px;padding:6px 14px;font-size:13px;font-weight:800;color:white;white-space:nowrap;">🌿 探索中</div>
+          <div style="height:8px;background:rgba(255,255,255,0.25);border-radius:4px;overflow:hidden;">
+            <div id="gph-xp-bar" style="height:100%;background:white;border-radius:4px;width:0%;transition:width 1s ease;"></div>
+          </div>
         </div>
+
+        <!-- 3統計 -->
         <div class="gph-stats-bar">
-          <div class="gph-stat"><div class="gph-stat-num" id="gph-exp-count">4</div><div class="gph-stat-lbl">体験回数</div></div>
-          <div class="gph-stat"><div class="gph-stat-num" id="gph-genre-count">4</div><div class="gph-stat-lbl">ジャンル</div></div>
-          <div class="gph-stat"><div class="gph-stat-num" id="gph-badge-count">4</div><div class="gph-stat-lbl">バッジ</div></div>
+          <div class="gph-stat"><div class="gph-stat-num" id="gph-exp-count">0</div><div class="gph-stat-lbl">体験回数</div></div>
+          <div class="gph-stat"><div class="gph-stat-num" id="gph-genre-count">0</div><div class="gph-stat-lbl">ジャンル</div></div>
+          <div class="gph-stat"><div class="gph-stat-num" id="gph-xp-total">0</div><div class="gph-stat-lbl">総XP</div></div>
         </div>
       </div>
 
       <div class="content" style="padding-top:16px;">
 
-        <!-- ✨ AI才能レポート -->
-        <div class="talent-report-card">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-            <span class="tr-ai-badge">✨ AI才能レポート</span>
-            <span id="tr-month" style="font-size:11px;color:#92400E;font-weight:600;"></span>
-          </div>
-          <div class="tr-title">今月の<span id="tr-child-name">さくら</span></div>
-
-          <!-- 発見された才能 -->
-          <div style="background:rgba(245,158,11,0.12);border-left:3px solid #F59E0B;border-radius:0 10px 10px 0;padding:10px 12px;margin-bottom:10px;">
-            <div style="font-size:10px;font-weight:800;color:#92400E;letter-spacing:0.08em;margin-bottom:4px;">🔍 発見された才能</div>
-            <div id="tr-talent" style="font-size:13px;color:#451A03;font-weight:700;line-height:1.6;"></div>
-          </div>
-
-          <!-- 今月のハイライト -->
-          <div style="font-size:10px;font-weight:800;color:#92400E;letter-spacing:0.08em;margin-bottom:6px;">📊 今月のハイライト</div>
-          <div id="tr-highlights" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;"></div>
-
-          <!-- 来月のおすすめ -->
-          <div style="background:rgba(255,255,255,0.7);border-radius:10px;padding:10px;border:1px solid #FCD34D;">
-            <div style="font-size:10px;font-weight:800;color:#92400E;letter-spacing:0.08em;margin-bottom:4px;">💡 来月のおすすめ</div>
-            <div id="tr-next" style="font-size:12px;color:#451A03;line-height:1.7;"></div>
-          </div>
+        <!-- ① ステータスレーダーチャート -->
+        <div class="map-card" style="border:2px solid #E8EDFF;background:linear-gradient(135deg,#F8F9FF,#fff);">
+          <div class="map-card-title" style="color:#4F7FFF;">① 🌟 ステータス</div>
+          <div id="stat-radar-chart" style="min-height:120px;"></div>
+          <div id="stat-bars" style="margin-top:12px;"></div>
         </div>
 
-        <!-- 才能ランキング -->
-        <div id="talent-ranking" style="display:none;margin-bottom:16px;">
-          <div style="font-size:13px;font-weight:800;color:var(--dark);margin-bottom:10px;letter-spacing:0.04em;">🏅 才能ランキング</div>
-          <div id="talent-ranking-items"></div>
-        </div>
-
-        <!-- ① 才能マップ -->
+        <!-- ② ジャンル別XP -->
         <div class="map-card">
-          <div class="map-card-title">① 🕸️ 才能マップ</div>
-          <div id="radar-chart" style="min-height:120px;"></div>
-          <div id="growth-cat-bars" style="margin-top:14px;"></div>
+          <div class="map-card-title">② ⚔️ ジャンル別レベル</div>
+          <div id="growth-cat-bars"></div>
         </div>
 
-        <!-- ② 思い出アルバム (デジタルアルバム) -->
+        <!-- ③ ファミリークエスト -->
+        <div class="map-card" style="border:2px solid #FDE8FF;background:linear-gradient(135deg,#FDF4FF,#fff);">
+          <div class="map-card-title" style="color:#7B5EA7;">③ 🏰 ファミリークエスト</div>
+
+          <!-- ファミリーレベル -->
+          <div style="background:linear-gradient(90deg,#7B5EA7,#4F7FFF);border-radius:12px;padding:12px 14px;margin-bottom:14px;color:white;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+              <div>
+                <span style="font-size:13px;font-weight:800;">👨‍👩‍👧 ファミリーレベル</span>
+                <div id="family-level-title" style="font-size:11px;opacity:0.85;margin-top:2px;">駆け出し親子チーム</div>
+              </div>
+              <div id="family-level-badge" style="font-size:20px;font-weight:900;">Lv.1</div>
+            </div>
+            <div style="height:6px;background:rgba(255,255,255,0.25);border-radius:3px;overflow:hidden;">
+              <div id="family-xp-bar" style="height:100%;background:white;border-radius:3px;width:0%;transition:width 0.8s ease;"></div>
+            </div>
+          </div>
+
+          <!-- 子どもクエスト -->
+          <div style="font-size:11px;font-weight:800;color:#7B5EA7;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:8px;">👦 子どものクエスト</div>
+          <div id="child-quests"></div>
+
+          <!-- 親クエスト -->
+          <div style="font-size:11px;font-weight:800;color:#4F7FFF;letter-spacing:0.06em;text-transform:uppercase;margin:12px 0 8px;">🙋 おとなのクエスト</div>
+          <div id="parent-quests"></div>
+        </div>
+
+        <!-- ④ 思い出アルバム -->
         <div class="map-card">
-          <div class="map-card-title">② 📸 思い出アルバム</div>
+          <div class="map-card-title">④ 📸 思い出アルバム</div>
           <div id="memory-album"></div>
           <button onclick="showAddMemoryModal()" class="btn btn-ghost" style="width:100%;margin-top:12px;font-size:13px;">＋ 思い出を追加する</button>
         </div>
 
-        <!-- ③ チャレンジ -->
+        <!-- ⑤ 獲得バッジ -->
         <div class="map-card">
-          <div class="map-card-title">③ 🏆 今月のチャレンジ</div>
-          <div class="challenge-card green">
-            <h4>🌿 この夏チャレンジ：自然体験を2回やろう！</h4>
-            <p>外で体を使った体験はお子さまの成長に抜群の効果があります。</p>
-            <div class="ch-track"><div class="ch-fill" id="ch-nature-bar" style="width:0%"></div></div>
-            <div class="ch-label" id="ch-nature-label">0 / 2 回達成</div>
-          </div>
-          <div class="challenge-card blue">
-            <h4>🎨 アート：もう1回挑戦してみよう！</h4>
-            <p>続けることで「本物の才能」が開花します。</p>
-            <div class="ch-track"><div class="ch-fill" id="ch-art-bar" style="width:0%"></div></div>
-            <div class="ch-label" id="ch-art-label">0 / 2 回達成</div>
-          </div>
-        </div>
-
-        <!-- ④ 獲得バッジ -->
-        <div class="map-card">
-          <div class="map-card-title">④ 🎖️ 獲得バッジ</div>
+          <div class="map-card-title">⑤ 🎖️ 獲得バッジ</div>
           <div class="badge-grid" id="badge-grid"></div>
         </div>
 
@@ -1941,6 +1945,69 @@
     return [...AIC_LEVELS].reverse().find(l => count >= l.min) || AIC_LEVELS[0];
   }
 
+  // ── RPG XP/レベルシステム ──
+  const XP_BASE    = 100;
+  const XP_STAR    = [0, 0, 10, 30, 60, 100];
+  const RPG_LEVELS = [
+    { min: 0,    lv: 1, icon: '🥚', title: '新米たんけん家',   next: 100  },
+    { min: 100,  lv: 2, icon: '🌱', title: '見習い探検家',     next: 250  },
+    { min: 250,  lv: 3, icon: '🌿', title: 'かけだし冒険者',   next: 500  },
+    { min: 500,  lv: 4, icon: '⚡', title: 'チャレンジャー',   next: 800  },
+    { min: 800,  lv: 5, icon: '🌟', title: '体験マスター',     next: 1200 },
+    { min: 1200, lv: 6, icon: '🏆', title: 'レジェンド冒険家', next: 9999 },
+  ];
+  const FAMILY_LEVELS = [
+    { min: 0,   lv: 1, title: '駆け出し親子チーム' },
+    { min: 150, lv: 2, title: 'チャレンジ親子'     },
+    { min: 400, lv: 3, title: '冒険家族'           },
+    { min: 800, lv: 4, title: '伝説の家族'         },
+  ];
+
+  function calcTotalXP(log) {
+    return log.reduce((sum, e) => sum + XP_BASE + (XP_STAR[e.stars || 0] || 0), 0);
+  }
+  function calcGenreXP(log) {
+    const xp = {};
+    AIC_CATEGORIES.forEach(c => xp[c.key] = 0);
+    log.forEach(e => {
+      if (xp[e.category] !== undefined)
+        xp[e.category] += XP_BASE + (XP_STAR[e.stars || 0] || 0);
+    });
+    return xp;
+  }
+  function getRPGLevel(xp) {
+    return [...RPG_LEVELS].reverse().find(l => xp >= l.min) || RPG_LEVELS[0];
+  }
+  function getFamilyLevel(xp) {
+    return [...FAMILY_LEVELS].reverse().find(l => xp >= l.min) || FAMILY_LEVELS[0];
+  }
+
+  // ── ステータス計算 ──
+  const STAT_AXES = ['好奇心','体力','協調性','集中力','創造力','チャレンジ精神'];
+  const STAT_ICONS = { '好奇心':'🔭','体力':'💪','協調性':'🤝','集中力':'🎯','創造力':'✨','チャレンジ精神':'⚡' };
+  const STAT_COLORS = { '好奇心':'#F59E0B','体力':'#22C55E','協調性':'#EC4899','集中力':'#4F7FFF','創造力':'#A855F7','チャレンジ精神':'#F43F5E' };
+  const STAT_MAP = {
+    'アート・工作':        { '創造力':2.0, '集中力':1.5, '好奇心':0.5 },
+    '科学・プログラミング':{ '好奇心':2.0, '集中力':1.5, 'チャレンジ精神':1.0 },
+    '自然・農業':          { '体力':2.0,   '好奇心':1.5, 'チャレンジ精神':0.5 },
+    '料理・食育':          { '協調性':1.5, '集中力':1.0, '創造力':0.5 },
+    '音楽・演劇':          { '創造力':1.5, '協調性':2.0, '集中力':0.5 },
+    'スポーツ':            { '体力':2.0,   'チャレンジ精神':2.0, '協調性':1.0 },
+  };
+  function calcStats(log) {
+    const raw = {};
+    STAT_AXES.forEach(s => raw[s] = 0);
+    log.forEach(e => {
+      const weights = STAT_MAP[e.category] || {};
+      const starFactor = 0.5 + (e.stars || 3) / 5 * 0.5;
+      Object.entries(weights).forEach(([stat, w]) => { raw[stat] += w * starFactor; });
+    });
+    const maxVal = Math.max(...Object.values(raw), 1);
+    const normalized = {};
+    STAT_AXES.forEach(s => normalized[s] = Math.min(Math.round(raw[s] / maxVal * 90) + (raw[s] > 0 ? 5 : 0), 95));
+    return normalized;
+  }
+
   // ── 体験を保存 ──
   function saveExperience() {
     if (!selectedFacility) return;
@@ -2048,97 +2115,108 @@
     injectDemoDataIfEmpty();
 
     const log       = JSON.parse(localStorage.getItem(AIC_LOG_KEY) || '[]');
-    const childName = localStorage.getItem(AIC_CAT_KEY)
-      || document.getElementById('child-name')?.value || 'お子さま';
+    const childName = localStorage.getItem(AIC_CAT_KEY) || 'お子さま';
     const typeIdx   = localStorage.getItem('aic_child_type');
     const type      = typeIdx !== null ? CHILD_TYPES[+typeIdx] : null;
 
-    // ── ヒーロー ──
-    document.getElementById('growth-hero-name').textContent = childName + ' の成長記録';
-    document.getElementById('growth-hero-type').textContent = type ? type.emoji + ' ' + type.name + 'タイプ' : '🌱 タイプ未診断';
-    const total = log.length;
-    const lv    = getLevel(total);
-    document.getElementById('growth-hero-level').textContent = lv.icon + ' ' + lv.label;
-
-    const counts = {};
+    // ── 基礎集計 ──
+    const total   = log.length;
+    const counts  = {};
     AIC_CATEGORIES.forEach(c => counts[c.key] = 0);
     log.forEach(e => { if (counts[e.category] !== undefined) counts[e.category]++; });
-
     const genres  = Object.values(counts).filter(v => v > 0).length;
-    const badges  = [
-      { icon:'🌱', name:'はじめての体験！', earned: total >= 1 },
-      { icon:'🎨', name:'アートデビュー',   earned: counts['アート・工作'] >= 1 },
-      { icon:'🔬', name:'科学者の卵',        earned: counts['科学・プログラミング'] >= 1 },
-      { icon:'🌟', name:'3ジャンル制覇！',   earned: genres >= 3 },
-      { icon:'🍳', name:'料理人デビュー',    earned: counts['料理・食育'] >= 1 },
-      { icon:'🌈', name:'全ジャンル制覇！',  earned: genres >= 6 },
-      { icon:'🏆', name:'体験マスター',       earned: total >= 5 },
-      { icon:'💎', name:'10回達成！',         earned: total >= 10 },
-    ];
-    const earnedBadges = badges.filter(b => b.earned).length;
 
-    document.getElementById('gph-exp-count').textContent   = total;
-    document.getElementById('gph-genre-count').textContent = genres;
-    document.getElementById('gph-badge-count').textContent = earnedBadges;
+    // ── XP/レベル計算 ──
+    const totalXP  = calcTotalXP(log);
+    const genreXP  = calcGenreXP(log);
+    const rpgLevel = getRPGLevel(totalXP);
+    const nextLevel = RPG_LEVELS[rpgLevel.lv] || RPG_LEVELS[RPG_LEVELS.length - 1];
+    const prevMin  = rpgLevel.min;
+    const xpPct    = rpgLevel.lv >= 6 ? 100 : Math.min((totalXP - prevMin) / (nextLevel.min - prevMin) * 100, 100);
 
-    // ── AI才能レポート ──
-    document.getElementById('tr-child-name').textContent = childName;
-    const now = new Date();
-    document.getElementById('tr-month').textContent = now.getFullYear() + '年' + (now.getMonth()+1) + '月';
-    const report = generateTalentReport(log, childName, counts);
-    document.getElementById('tr-talent').textContent    = report.talent;
-    document.getElementById('tr-next').textContent      = report.next;
-    document.getElementById('tr-highlights').innerHTML  = report.highlights.map(h =>
-      '<span class="tr-hl">' + h + '</span>'
-    ).join('');
+    // ── ヒーロー ──
+    document.getElementById('growth-hero-name').textContent  = childName + ' の冒険記録';
+    document.getElementById('growth-hero-type').textContent  = type ? type.emoji + ' ' + type.name + 'タイプ' : '🌱 タイプ未診断';
+    document.getElementById('gph-level-icon').textContent    = rpgLevel.icon;
+    document.getElementById('gph-level-num').textContent     = 'Lv.' + rpgLevel.lv;
+    document.getElementById('gph-level-title').textContent   = rpgLevel.title;
+    document.getElementById('gph-xp-text').textContent       = totalXP + ' / ' + nextLevel.min + ' XP';
+    document.getElementById('gph-exp-count').textContent     = total;
+    document.getElementById('gph-genre-count').textContent   = genres;
+    document.getElementById('gph-xp-total').textContent      = totalXP;
+    setTimeout(() => { document.getElementById('gph-xp-bar').style.width = xpPct + '%'; }, 100);
 
-    // ── 才能ランキング ──
-    const activeCats = report.topCats.filter(c => c.count > 0);
-    const rankEl = document.getElementById('talent-ranking');
-    if (activeCats.length > 0) {
-      rankEl.style.display = 'block';
-      const medals = ['🥇','🥈','🥉'];
-      document.getElementById('talent-ranking-items').innerHTML = activeCats.slice(0,3).map((c,i) => {
-        const pct = Math.min(c.count / (activeCats[0].count || 1) * 100, 100);
-        return '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">'
-          + '<span style="font-size:20px;width:24px;text-align:center;">' + (medals[i] || '🏅') + '</span>'
-          + '<span style="font-size:18px;">' + c.emoji + '</span>'
-          + '<div style="flex:1;">'
-          + '<div style="display:flex;justify-content:space-between;font-size:12px;font-weight:700;margin-bottom:3px;">'
-          + '<span>' + c.shortName + '</span><span style="color:var(--sub);">' + c.count + '回</span></div>'
-          + '<div style="height:8px;background:var(--border);border-radius:4px;overflow:hidden;">'
-          + '<div style="height:100%;border-radius:4px;background:' + c.color + ';width:' + pct + '%;transition:width 0.6s ease;"></div>'
-          + '</div></div></div>';
-      }).join('');
-    } else {
-      rankEl.style.display = 'none';
-    }
+    // ── ステータスレーダーチャート ──
+    const stats = calcStats(log);
+    drawStatRadar(stats);
+    document.getElementById('stat-bars').innerHTML = STAT_AXES.map(s => {
+      const val = stats[s] || 0;
+      return '<div style="display:flex;align-items:center;gap:8px;margin-bottom:7px;">'
+        + '<span style="font-size:14px;width:20px;">' + STAT_ICONS[s] + '</span>'
+        + '<span style="font-size:11px;font-weight:700;color:var(--sub);width:64px;">' + s + '</span>'
+        + '<div style="flex:1;height:7px;background:var(--border);border-radius:4px;overflow:hidden;">'
+        + '<div data-target="' + val + '" style="height:100%;border-radius:4px;background:' + STAT_COLORS[s] + ';width:0%;transition:width 0.8s ease;"></div>'
+        + '</div>'
+        + '<span style="font-size:11px;font-weight:700;color:var(--sub);width:28px;text-align:right;">' + val + '</span>'
+        + '</div>';
+    }).join('');
+    setTimeout(() => {
+      document.querySelectorAll('#stat-bars [data-target]').forEach(el => {
+        el.style.width = el.dataset.target + '%';
+      });
+    }, 100);
 
-    // ── 才能マップ ──
-    drawRadarChart(AIC_CATEGORIES.map(c => Math.min(counts[c.key] * 20, 100)));
+    // ── ジャンル別XPバー ──
     document.getElementById('growth-cat-bars').innerHTML = AIC_CATEGORIES.map(c => {
-      const cnt = counts[c.key];
-      const pct = Math.min(cnt * 20, 100);
-      const clv = getLevel(cnt);
+      const xp  = genreXP[c.key] || 0;
+      const glv = getRPGLevel(xp);
+      const gNext = RPG_LEVELS[glv.lv] || RPG_LEVELS[RPG_LEVELS.length-1];
+      const pct = glv.lv >= 6 ? 100 : Math.min((xp - glv.min) / (gNext.min - glv.min) * 100, 100);
       return '<div class="cat-row">'
         + '<div class="cat-label-wrap"><span class="cat-emoji">' + c.emoji + '</span><span class="cat-name">' + c.shortName + '</span></div>'
+        + '<div style="flex:1;">'
+        + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;">'
+        + '<span style="font-size:10px;font-weight:800;color:' + c.color + ';">' + glv.icon + ' Lv.' + glv.lv + ' ' + glv.title + '</span>'
+        + '<span style="font-size:10px;color:var(--sub);">' + xp + ' XP</span>'
+        + '</div>'
         + '<div class="cat-track"><div class="cat-fill" data-target="' + pct + '" style="width:0%;background:' + c.color + '"></div></div>'
-        + '<span class="cat-badge">' + clv.icon + clv.label + '</span>'
-        + '<div class="cat-cnt">' + cnt + '回</div>'
-        + '</div>';
+        + '</div></div>';
     }).join('');
     setTimeout(() => {
       document.querySelectorAll('#growth-cat-bars .cat-fill[data-target]').forEach(el => {
         el.style.width = el.dataset.target + '%';
       });
-    }, 80);
+    }, 120);
     checkLevelUps(counts);
 
-    // ── 思い出ストーリー（写真なし・テキスト中心） ──
+    // ── ファミリークエスト ──
+    const memoCount  = log.filter(e => e.memo && e.memo.length > 0).length;
+    const childQ = [
+      { text: '今月3つの体験に挑戦しよう！', icon: '🗺️', cur: total,    max: 3 },
+      { text: 'アートか音楽を体験しよう！',   icon: '🎨', cur: (counts['アート・工作'] || 0) + (counts['音楽・演劇'] || 0), max: 1 },
+      { text: '3つのジャンルを制覇せよ！',    icon: '🌈', cur: genres,   max: 3 },
+    ];
+    const parentQ = [
+      { text: '体験後にひとこと感想を書く',     icon: '📝', cur: memoCount,          max: 3 },
+      { text: '子どもと一緒に体験を選ぼう',     icon: '🤝', cur: Math.min(total, 1), max: 1 },
+      { text: '体験に★5をつけた数（3回）',    icon: '⭐', cur: log.filter(e => e.stars === 5).length, max: 3 },
+    ];
+    const familyXP  = childQ.reduce((s, q) => s + Math.min(q.cur, q.max) * 50, 0)
+                    + parentQ.reduce((s, q) => s + Math.min(q.cur, q.max) * 50, 0);
+    const famLevel  = getFamilyLevel(familyXP);
+    const famNext   = FAMILY_LEVELS[famLevel.lv] || FAMILY_LEVELS[FAMILY_LEVELS.length-1];
+    const famPct    = famLevel.lv >= FAMILY_LEVELS.length ? 100
+                    : Math.min((familyXP - famLevel.min) / (famNext.min - famLevel.min) * 100, 100);
+    document.getElementById('family-level-badge').textContent = 'Lv.' + famLevel.lv;
+    document.getElementById('family-level-title').textContent  = famLevel.title;
+    setTimeout(() => { document.getElementById('family-xp-bar').style.width = famPct + '%'; }, 150);
+    document.getElementById('child-quests').innerHTML  = childQ.map(q => renderQuestCard(q, '#7B5EA7')).join('');
+    document.getElementById('parent-quests').innerHTML = parentQ.map(q => renderQuestCard(q, '#4F7FFF')).join('');
+
+    // ── 思い出アルバム ──
     document.getElementById('memory-album').innerHTML = log.length
       ? log.slice(0, 8).map(e => {
-          const stars = (e.stars || 0);
-          const starStr = '★'.repeat(stars) + '☆'.repeat(5 - stars);
+          const starStr = '★'.repeat(e.stars || 0) + '☆'.repeat(5 - (e.stars || 0));
           return '<div class="memory-entry">'
             + '<div class="memory-entry-icon">' + e.emoji + '</div>'
             + '<div class="memory-entry-body">'
@@ -2150,21 +2228,39 @@
         }).join('')
       : '<div style="text-align:center;padding:24px;color:var(--sub);font-size:13px;">体験を記録するとここにストーリーが貯まります 📖</div>';
 
-    // ── チャレンジ ──
-    const natureCnt = counts['自然・農業'];
-    const artCnt    = counts['アート・工作'];
-    document.getElementById('ch-nature-bar').style.width   = Math.min(natureCnt / 2 * 100, 100) + '%';
-    document.getElementById('ch-nature-label').textContent = natureCnt >= 2 ? '✅ 達成！' : natureCnt + ' / 2 回達成';
-    document.getElementById('ch-art-bar').style.width      = Math.min(artCnt / 2 * 100, 100) + '%';
-    document.getElementById('ch-art-label').textContent    = artCnt >= 2 ? '✅ 達成！' : artCnt + ' / 2 回達成';
-
     // ── バッジ ──
+    const badges = [
+      { icon:'🌱', name:'はじめての体験！', earned: total >= 1 },
+      { icon:'🎨', name:'アートデビュー',   earned: counts['アート・工作'] >= 1 },
+      { icon:'🔬', name:'科学者の卵',        earned: counts['科学・プログラミング'] >= 1 },
+      { icon:'🌟', name:'3ジャンル制覇！',   earned: genres >= 3 },
+      { icon:'🍳', name:'料理人デビュー',    earned: counts['料理・食育'] >= 1 },
+      { icon:'🌈', name:'全ジャンル制覇！',  earned: genres >= 6 },
+      { icon:'🏆', name:'体験マスター',       earned: total >= 5 },
+      { icon:'💎', name:'10回達成！',         earned: total >= 10 },
+    ];
     document.getElementById('badge-grid').innerHTML = badges.map(b =>
       '<div class="badge-cell">'
       + '<div class="badge-icon ' + (b.earned ? 'earned' : 'locked') + '">' + b.icon + '</div>'
       + '<div class="badge-lbl ' + (b.earned ? '' : 'locked') + '">' + b.name + '</div>'
       + '</div>'
     ).join('');
+  }
+
+  function renderQuestCard(q, color) {
+    const pct  = Math.min(q.cur / q.max * 100, 100);
+    const done = q.cur >= q.max;
+    return '<div style="background:white;border-radius:12px;padding:12px;margin-bottom:8px;border:1.5px solid ' + (done ? color : 'var(--border)') + ';">'
+      + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">'
+      + '<div style="display:flex;align-items:center;gap:6px;">'
+      + '<span style="font-size:16px;">' + q.icon + '</span>'
+      + '<span style="font-size:12px;font-weight:700;color:var(--text);">' + q.text + '</span>'
+      + '</div>'
+      + '<span style="font-size:11px;font-weight:800;color:' + (done ? color : 'var(--sub)') + ';">' + (done ? '✅ 達成！' : q.cur + '/' + q.max) + '</span>'
+      + '</div>'
+      + '<div style="height:6px;background:var(--border);border-radius:3px;overflow:hidden;">'
+      + '<div style="height:100%;border-radius:3px;background:' + color + ';width:' + pct + '%;transition:width 0.6s ease;"></div>'
+      + '</div></div>';
   }
 
   // ── 思い出追加モーダル ──
@@ -2203,7 +2299,42 @@
     renderGrowthMap();
   }
 
-  // ── レーダーチャート（SVG） ──
+  // ── ステータスレーダーチャート（6軸：好奇心・体力・協調性・集中力・創造力・チャレンジ精神） ──
+  function drawStatRadar(stats) {
+    const axes = STAT_AXES;
+    const n = axes.length, cx = 130, cy = 128, maxR = 82;
+    function pt(i, r) {
+      const a = (Math.PI * 2 * i / n) - Math.PI / 2;
+      return [cx + r * Math.cos(a), cy + r * Math.sin(a)];
+    }
+    const grids = [0.25, 0.5, 0.75, 1.0].map(p => {
+      const pts = axes.map((_, i) => pt(i, maxR * p).join(',')).join(' ');
+      return '<polygon points="' + pts + '" fill="none" stroke="#E5E7EB" stroke-width="1"/>';
+    }).join('');
+    const spokes = axes.map((_, i) => {
+      const [x, y] = pt(i, maxR);
+      return '<line x1="' + cx + '" y1="' + cy + '" x2="' + x + '" y2="' + y + '" stroke="#E5E7EB" stroke-width="1"/>';
+    }).join('');
+    const scores = axes.map(s => stats[s] || 0);
+    const dataPts = scores.map((s, i) => pt(i, maxR * Math.max(s, 4) / 100).join(',')).join(' ');
+    const dataArea = '<polygon points="' + dataPts + '" fill="rgba(168,85,247,0.15)" stroke="#A855F7" stroke-width="2.5" stroke-linejoin="round"/>';
+    const dots = scores.map((s, i) => {
+      const [x, y] = pt(i, maxR * Math.max(s, 4) / 100);
+      const col = STAT_COLORS[axes[i]] || '#A855F7';
+      return '<circle cx="' + x + '" cy="' + y + '" r="5" fill="' + col + '" stroke="white" stroke-width="2"/>';
+    }).join('');
+    const lbls = axes.map((s, i) => {
+      const [x, y] = pt(i, maxR + 22);
+      const anchor = x < cx - 5 ? 'end' : x > cx + 5 ? 'start' : 'middle';
+      return '<text x="' + x + '" y="' + (y-3) + '" text-anchor="' + anchor + '" font-size="11" fill="#6B7280" font-family="sans-serif">' + STAT_ICONS[s] + '</text>'
+           + '<text x="' + x + '" y="' + (y+10) + '" text-anchor="' + anchor + '" font-size="10" fill="#6B7280" font-family="sans-serif" font-weight="600">' + s + '</text>';
+    }).join('');
+    document.getElementById('stat-radar-chart').innerHTML =
+      '<svg viewBox="0 0 260 255" width="100%" style="max-width:280px;display:block;margin:0 auto;">'
+      + grids + spokes + dataArea + dots + lbls + '</svg>';
+  }
+
+  // ── レーダーチャート（SVG）ジャンル用（後方互換） ──
   function drawRadarChart(scores) {
     const n = 6, cx = 130, cy = 128, maxR = 82;
     function pt(i, r) {
@@ -2238,44 +2369,70 @@
 
   // ── レベルアップ検知＋ポップアップ ──
   function checkLevelUps(counts) {
-    const seen   = JSON.parse(localStorage.getItem('aic_lvl_seen') || '{}');
-    const newSeen = {};
+    const log     = JSON.parse(localStorage.getItem(AIC_LOG_KEY) || '[]');
+    const totalXP = calcTotalXP(log);
+    const rpgLv   = getRPGLevel(totalXP);
+    const seen    = JSON.parse(localStorage.getItem('aic_lvl_seen') || '{}');
+    const newSeen = { ...seen };
     const upgrades = [];
+
+    // 総合RPGレベルアップ
+    const prevTotalLv = seen['__total__'] ?? 0;
+    if (rpgLv.lv > prevTotalLv && prevTotalLv > 0) {
+      upgrades.push({ emoji: rpgLv.icon, label: 'Lv.' + rpgLv.lv + ' ' + rpgLv.title, sub: '総合レベルアップ！', isTotal: true });
+    }
+    newSeen['__total__'] = rpgLv.lv;
+
+    // ジャンル別
     AIC_CATEGORIES.forEach(c => {
       const lv    = getLevel(counts[c.key]);
       const lvIdx = AIC_LEVELS.indexOf(lv);
       const prev  = seen[c.key] ?? 0;
       newSeen[c.key] = Math.max(lvIdx, prev);
-      if (lvIdx > prev && lvIdx > 0) upgrades.push({ cat: c, level: lv });
+      if (lvIdx > prev && lvIdx > 0)
+        upgrades.push({ emoji: c.emoji, label: c.shortName + ' ' + lv.icon + lv.label, sub: 'ジャンルレベルアップ！' });
     });
+
     localStorage.setItem('aic_lvl_seen', JSON.stringify(newSeen));
     if (!upgrades.length) return;
     let delay = 750;
     upgrades.forEach(u => {
-      setTimeout(() => showLevelUpPopup(u.cat, u.level), delay);
-      delay += 2100;
+      setTimeout(() => showLevelUpPopup(u), delay);
+      delay += 2200;
     });
   }
 
-  function showLevelUpPopup(cat, level) {
+  function showLevelUpPopup(u) {
     const bd = document.createElement('div');
     bd.className = 'lu-backdrop';
     const pop = document.createElement('div');
     pop.className = 'lu-popup';
-    pop.innerHTML = `
-      <span class="lu-emoji">${cat.emoji}</span>
-      <div class="lu-cat">${cat.key}</div>
-      <div class="lu-lbl">${level.icon} ${level.label}に到達！</div>
-      <div class="lu-stars">⭐ ⭐ ⭐</div>
-    `;
+    pop.innerHTML =
+      '<div style="font-size:10px;font-weight:800;color:#7B5EA7;letter-spacing:0.1em;margin-bottom:6px;">' + u.sub + '</div>'
+      + '<span class="lu-emoji">' + u.emoji + '</span>'
+      + '<div class="lu-lbl" style="font-size:18px;margin-top:8px;">' + u.label + '</div>'
+      + '<div class="lu-stars" style="font-size:22px;margin-top:8px;">🎉 🎉 🎉</div>';
+    // 紙吹雪エフェクト
+    const confetti = document.createElement('div');
+    confetti.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:1001;overflow:hidden;';
+    const colors = ['#4F7FFF','#7B5EA7','#F59E0B','#22C55E','#F43F5E'];
+    for (let i = 0; i < 30; i++) {
+      const p = document.createElement('div');
+      const col = colors[i % colors.length];
+      p.style.cssText = 'position:absolute;width:8px;height:8px;border-radius:2px;background:' + col
+        + ';left:' + (Math.random()*100) + '%;top:-10px;'
+        + 'animation:confettiFall ' + (0.8 + Math.random()*1.2) + 's linear ' + (Math.random()*0.5) + 's forwards;';
+      confetti.appendChild(p);
+    }
+    document.body.appendChild(confetti);
     document.body.appendChild(bd);
     document.body.appendChild(pop);
     const close = () => {
       bd.classList.add('out'); pop.classList.add('out');
-      setTimeout(() => { bd.remove(); pop.remove(); }, 380);
+      setTimeout(() => { bd.remove(); pop.remove(); confetti.remove(); }, 380);
     };
     bd.addEventListener('click', close);
-    setTimeout(close, 1800);
+    setTimeout(close, 2000);
   }
 
   // ── スキル獲得エフェクト（フィードバック送信後） ──
