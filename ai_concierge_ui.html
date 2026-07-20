@@ -2975,7 +2975,6 @@
     if (age)  localStorage.setItem('aic_child_age', age);
     const profile = { traits, education: edu, style, groupType: group, genres };
     localStorage.setItem('aic_child_profile', JSON.stringify(profile));
-    showToast('保存しました！');
     goTo('screen-settings');
   }
 
